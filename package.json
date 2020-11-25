@@ -1,0 +1,23 @@
+{
+  "name": "L-System",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "tsc && node dist/parserOutputs.js",
+    "watch": "tsc -w",
+    "test": "jest src"
+  },
+  "author": "Bhavik Singh",
+  "license": "MIT License",
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "ts-node-dev": "^1.0.0",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "@types/jest": "^26.0.15"
+  }
+}
