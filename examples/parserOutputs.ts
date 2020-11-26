@@ -1,10 +1,10 @@
 import util from "util";
-import {parseAxiom, parsePredecessor, parseProduction, parseSuccessor} from "../src/parser";
+import {parseAxiom, parsePredecessor, parseProduction, parseProductions, parseSuccessor} from "../src/parser";
 
 //Axioms
 
 //AXIOM
-if (true) {
+if (false) {
   console.log("\n❶ AXIOM")
   let inputs = ["ABC", "A(1)", "A(1,2)"];
   let errors = ["{", "A((1"]
@@ -33,7 +33,7 @@ if (true) {
 }
 
 //PREDECESSOR 
-if (true) {
+if (false) {
   console.log("\n❷ PREDECSSOR")
   let inputs = ["A", "A<B>C", "A<B(x,y)>C", "B(x,y){x>y}", "B(x,y){x+y>2}"];
   if (true) {
@@ -53,7 +53,7 @@ if (true) {
 }
 
 //SUCCESSOR 
-if (true) {
+if (false) {
   console.log("\n❸ SUCCESSOR")
   let inputs = ["A", "A(x*2)XA", "FABCASD", "A(x * 2, y * 3)", "A((2 *x+3) +(4 * y))B"];
   let inputParams = [undefined, ['x'], undefined, ['x', 'y'], ['x', 'y']]
@@ -85,3 +85,13 @@ if (false) {
   })
 }
 
+if(true) {
+  console.log("\n❺ STOCHASTIC PRODUCTIONs");
+  let inputs = [["A: X", "A:X"], ["A(x): X", "A(y): Y", "A(x): B"], ["A(r): R", "A(r): {2} R"]];
+  inputs.forEach((input,index) => {
+    console.log("➡️ " + index + ". : \x1b[33m%s\x1b[0m",input);
+    let parsed = parseProductions(input);
+    console.log("⬅ " + index + ".: Result");
+    console.log(util.inspect(parsed, false, null, true));
+  })
+}

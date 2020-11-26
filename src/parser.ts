@@ -6,17 +6,44 @@ export function parseAxiom(axiom: string): Axiom {
   return parseSentence(axiom, parseParamsArray) as Axiom
 }
 
-//TODO: ADD STOCHASTIC!
+//TODO: this will break if the strings aren't equivialent A(X), A(Y)
+export function parseProductions(productionStrings: string[]) {
+  let productionMap : { [predString: string]: Production} = {}
+  productionStrings.forEach((productionString)=> {
+   let splitString = splitProduction(productionString);
+   let predString = splitString[0].trim();
+   let existingProd = productionMap[predString];
+   if (existingProd) {
+     //console.log("Existing pred exists, adding to that directly");
+     let successorString = splitString[1].trim();
+     let successor : Successor = parseSuccessor(successorString, existingProd.predecessor.letter.params);
+     if (existingProd.successor instanceof Array) {
+      existingProd.successor.push(successor);
+     } else {
+       existingProd.successor = [existingProd.successor as Successor, successor];
+     }
+   } else {
+     productionMap[predString] = parseProduction(productionString);
+   }
+  })
+  let productions = Object.values(productionMap);
+  return productions;
+}
+
 export function parseProduction(productionString: string) {
-  let productionStringArray = productionString.split(":");
-  if (productionStringArray.length !== 2) 
-    throw Error("Could not create production, wrong number of : delimiter");
+  let productionStringArray = splitProduction(productionString);
   let predecessor : Predecessor = parsePredecessor(productionStringArray[0]);
   let successor : Successor = parseSuccessor(productionStringArray[1], predecessor.letter.params);
   let production : Production =  {
     predecessor: predecessor, successor: successor
   }
   return production
+}
+function splitProduction(productionString: string) {
+  let productionStringArray = productionString.split(":");
+  if (productionStringArray.length !== 2) 
+    throw Error("Could not create production, wrong number of : delimiter");  
+  return productionStringArray;
 }
 
 //TODO: ASSUMES CONTEXT HAS NO PARAMS. FIX.
@@ -82,10 +109,26 @@ export function parsePredecessor(predecessor: string) : Predecessor {
   //console.log("Parsed predecessor, here..." + output);
   return output;
 }
+
 export function parseSuccessor(successor: string, paramsName: ParamsName) : Successor{
-  let sLetters =  parseSentence(successor, (str) => parseFunctions(str, paramsName)) as Letter<ParamsRule>[]
+  let s = successor, weight;
+  if (s.includes("{") || s.includes("}")) {
+    if (! (s.includes("{") && s.includes("}")))
+      throw Error("Mis constructed weight in %s needs open and closed braces " + s);
+    let startPos = s.indexOf("{");
+    let endPos = s.indexOf("}");
+    let weightString  = s.substring(startPos +1, endPos);
+    if (!isNumeric(weightString)) {
+      throw Error("Weight needs to be numeric" + weightString);
+    }
+    weight = parseFloat(weightString.trim());
+    //TOOD: Clean up this code a bit
+    s = s.replace("{" + weightString + "}","").trim();
+  }
+  let sLetters =  parseSentence(s, (str) => parseFunctions(str, paramsName)) as Letter<ParamsRule>[]
   return {
-    letters: sLetters
+    letters: sLetters,
+    weight: weight
   }
 } 
 

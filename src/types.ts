@@ -33,7 +33,7 @@ type Axiom =
 
 interface Production {
   predecessor: Predecessor;
-  successor: Successor | Successor[]
+  successor: (Successor) | (Successor[])
 }
 
 
