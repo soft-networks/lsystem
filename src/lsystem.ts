@@ -1,16 +1,20 @@
 
 import {sym, Letter, ParamsValue, ParamsName, ParamsExpanded, ParamsRule, Params, Condition, Context, Predecessor, Successor, Axiom, Production} from "./types"
 
+let debug = false;
+let dPrint = (msg) => {if(debug) { console.log(msg)}};
+
 export default class LSystem {
   axiom: Axiom;
   productions: Production[];
-  iterations = 1;
+  iterations: number;
 
-  constructor(axiom: Axiom, productions: Production[], iterations = 1) {
+  constructor(axiom: Axiom, productions: Production[], iterations?: number) {
     this.axiom = axiom;
     this.productions = productions;
-    this.iterations = iterations;
+    this.iterations = iterations || 1;
   }
+
   iterate = () => {
     let currentOutput = this.axiom;
     for (var i = 0; i < this.iterations; i++) {
@@ -18,32 +22,35 @@ export default class LSystem {
     }
     return currentOutput;
   }
-  // deserializeAxiom(axiom: string): Axiom {
-  //   //TODO
-  // }
-  // deserializeProductions(productions: string[]): Production[] {
-  //   //tood
-  // }
-  serialize = () => {
-
-  }
   /**
    * Replaces each letter of an axiom with the right successor.
    * @param axiom 
    */
   replace = (axiom: Axiom) => {
-    let newLetters: Axiom = [];
+    let replacedLetters: Axiom = [];
     axiom.forEach((letter) => {
       //1: Find the right production
-      let production = this.findProduction(letter, axiom);
-      //1.5: Choose a successor (in case there are multiple, to be chosen from stochastically)
-      let successor = chooseSuccessorStochastic(production);
-      //2: Expand the successor, applying any params 
-      let newLetters: Axiom = expandSuccessor(successor, letter.params);
-      //3: Replace this letter with the new letters 
-      newLetters.push(...newLetters)
+      let production: Production;
+      try {
+        production = this.findProduction(letter, axiom);
+        dPrint("Production chosen");
+        dPrint(production);
+      } catch (Error) {
+        dPrint("Didn't find production, replacing with myself: " + letter.symbol)
+        replacedLetters = [...replacedLetters, letter];
+      }
+      if (production) {
+        //1.5: Choose a successor (in case there are multiple, to be chosen from stochastically)
+        let successor : Successor= chooseSuccessorStochastic(production);
+        dPrint("successor chosen");
+        dPrint(successor);
+        //2: Expand the successor, applying any params 
+        let newLetters : Axiom = expandSuccessor(successor, letter.params);
+        //3: Replace this letter with the new letters 
+        replacedLetters = [...replacedLetters, ...newLetters]
+      }
     })
-    return newLetters;
+    return replacedLetters;
   }
   /**
    * Finds the right production to apply to a given letter, for a current axiom.
@@ -158,6 +165,8 @@ function expandSuccessor(successor: Successor, params: ParamsValue): Axiom {
     }
     newLetters.push(newLetter);
   })
+  dPrint("Returning new set of letters");
+  dPrint(newLetters);
   return newLetters;
 }
 

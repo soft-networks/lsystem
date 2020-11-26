@@ -1,5 +1,5 @@
 import util from "util";
-import {parseAxiom, parsePredecessor, parseProduction, parseSuccessor} from "./parser";
+import {parseAxiom, parsePredecessor, parseProduction, parseSuccessor} from "../src/parser";
 
 //Axioms
 

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node dist/parserOutputs.js",
     "watch": "tsc -w",
-    "test": "jest src"
+    "test": "jest tests"
   },
   "author": "Bhavik Singh",
   "license": "MIT License",

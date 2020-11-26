@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const util_1 = __importDefault(require("util"));
-const parser_1 = require("./parser");
+const parser_1 = require("../src/parser");
 //Axioms
 //AXIOM
 if (true) {

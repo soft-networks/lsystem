@@ -1,13 +1,10 @@
 
 import {sym, Letter, ParamsValue, ParamsName, ParamsRule, Params, Condition, Context, Predecessor, Successor, Axiom, Production} from "./types"
 
-
 let reservedChars = ["(", ")", ":", "{", "}"]
-//PARSER
 export function parseAxiom(axiom: string): Axiom {
   return parseSentence(axiom, parseParamsArray) as Axiom
 }
-
 
 //TODO: ADD STOCHASTIC!
 export function parseProduction(productionString: string) {
@@ -16,10 +13,10 @@ export function parseProduction(productionString: string) {
     throw Error("Could not create production, wrong number of : delimiter");
   let predecessor : Predecessor = parsePredecessor(productionStringArray[0]);
   let successor : Successor = parseSuccessor(productionStringArray[1], predecessor.letter.params);
-  return {
-    predecessor: predecessor,
-    successor: successor
+  let production : Production =  {
+    predecessor: predecessor, successor: successor
   }
+  return production
 }
 
 //TODO: ASSUMES CONTEXT HAS NO PARAMS. FIX.
@@ -85,7 +82,6 @@ export function parsePredecessor(predecessor: string) : Predecessor {
   //console.log("Parsed predecessor, here..." + output);
   return output;
 }
-
 export function parseSuccessor(successor: string, paramsName: ParamsName) : Successor{
   let sLetters =  parseSentence(successor, (str) => parseFunctions(str, paramsName)) as Letter<ParamsRule>[]
   return {
@@ -126,7 +122,6 @@ export function parseSentence(axiom: string, paramParser: (string) => Params): L
   }
   return parsedLetters;
 }
-
 function parseParamsArray(paramsString: string): ParamsValue | ParamsName {
   //console.log("Trimmed paramstring to" +  paramsString);
   let paramsArray: (string | number)[] = [];
@@ -144,7 +139,6 @@ function parseParamsArray(paramsString: string): ParamsValue | ParamsName {
   })
   return paramsArray;
 }
-
 function parseFunctions(evalString: string, paramsNames: ParamsName) {
   let functionStringArray = evalString.split(",");
   let functions : ParamsRule = [];
@@ -155,7 +149,6 @@ function parseFunctions(evalString: string, paramsNames: ParamsName) {
   })
   return functions;
 }
-
 function parseFunc(evalString: string, paramsNames: ParamsName ){
   let paramString = paramsNames.join();
   let returnString = "return " + evalString;
@@ -164,7 +157,6 @@ function parseFunc(evalString: string, paramsNames: ParamsName ){
   var func = new Function("return " + functionString)();
   return func;
 }
-
 function findEndBracket(axiom: string, startingPos: number): number {
   let i = startingPos + 1;
   let nestedBrackets = 1;
@@ -186,7 +178,6 @@ function findEndBracket(axiom: string, startingPos: number): number {
   
   return endPos;
 }
-
 function isNumeric(str: string) {
   if (typeof str != "string") return false // we only process strings!  
   return !isNaN(str as unknown as number) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
