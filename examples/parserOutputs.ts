@@ -4,7 +4,7 @@ import {parseAxiom, parsePredecessor, parseProduction, parseProductions, parseSu
 //Axioms
 
 //AXIOM
-if (false) {
+if (true) {
   console.log("\n❶ AXIOM")
   let inputs = ["ABC", "A(1)", "A(1,2)"];
   let errors = ["{", "A((1"]
@@ -33,7 +33,7 @@ if (false) {
 }
 
 //PREDECESSOR 
-if (false) {
+if (true) {
   console.log("\n❷ PREDECSSOR")
   let inputs = ["A", "A<B>C", "A<B(x,y)>C", "B(x,y){x>y}", "B(x,y){x+y>2}"];
   if (true) {
@@ -53,7 +53,7 @@ if (false) {
 }
 
 //SUCCESSOR 
-if (false) {
+if (true) {
   console.log("\n❸ SUCCESSOR")
   let inputs = ["A", "A(x*2)XA", "FABCASD", "A(x * 2, y * 3)", "A((2 *x+3) +(4 * y))B"];
   let inputParams = [undefined, ['x'], undefined, ['x', 'y'], ['x', 'y']]
@@ -74,7 +74,7 @@ if (false) {
 }
 
 //FULL PRODUCTIONS
-if (false) {
+if (true) {
   console.log("\n❹ FULL PRODUCTION");
   let inputs = ["A : FA", "A(x){x > 2}: B", "A(x,y) : A(x+1, y+1)FF"];
   inputs.forEach((input, index) => {

@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "start": "tsc && node dist/parserOutputs.js",
+    "start-parser": "tsc && node dist/examples/parserOutputs.js",
+    "start-lsystem": "tsc && node dist/examples/lSystemOutputs.js",
     "watch": "tsc -w",
     "test": "jest tests"
   },

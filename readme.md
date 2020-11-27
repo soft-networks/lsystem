@@ -4,6 +4,7 @@ A work in progress node module (my very first), that generates L-Systems includi
 
 # Scripts to get going
 
-`npm run start`: Runs the parser on a variety of inputs, showing outputs
+`npm run start-parser`: Runs the parser on a variety of inputs, showing outputs
+`npm run start-lsystem`: Runs the lsystem on a basic string, iterates it
 `npm run test`: Runs test with jest, parser only for now
 `npm watch`: Runs typescript (tsc) in watch mode.

@@ -71,7 +71,6 @@ function compareAxiom(tOut, aOut) {
 function compareProduction(tOut, pOut) {
   comparePredecessor(tOut.predecessor, pOut.predecessor);
   if (tOut.successor.length) {
-    console.log(tOut.successor);
     expect(pOut.successor).toEqual(expect.any(Array));
     tOut.successor.forEach((tOutSuccessor, index) => {
       let pOutSuccessor = pOut.successor[index];
