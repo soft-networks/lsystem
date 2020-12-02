@@ -47,7 +47,6 @@ function splitProduction(productionString: string) {
 }
 
 //TODO: ASSUMES CONTEXT HAS NO PARAMS. FIX.
-//TODO: ONLY ONE CONDITION IS POSSIBLE FOR NOW.
 export function parsePredecessor(predecessor: string) : Predecessor {
   let p = predecessor.slice().trim();
   //See if we have a condition. Remove it from string. 

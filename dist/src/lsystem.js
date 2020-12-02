@@ -22,15 +22,7 @@ class LSystem {
             axiom.forEach((letter) => {
                 //1: Find the right production
                 let production;
-                try {
-                    production = this.findProduction(letter, axiom);
-                    dPrint("Production chosen");
-                    dPrint(production);
-                }
-                catch (Error) {
-                    dPrint("Didn't find production, replacing with myself: " + letter.symbol);
-                    replacedLetters = [...replacedLetters, letter];
-                }
+                production = this.findProduction(letter, axiom);
                 if (production) {
                     //1.5: Choose a successor (in case there are multiple, to be chosen from stochastically)
                     let successor = chooseSuccessorStochastic(production);
@@ -40,6 +32,10 @@ class LSystem {
                     let newLetters = expandSuccessor(successor, letter.params);
                     //3: Replace this letter with the new letters 
                     replacedLetters = [...replacedLetters, ...newLetters];
+                }
+                else {
+                    dPrint("No production found, replacing with myself");
+                    replacedLetters = [...replacedLetters, letter];
                 }
             });
             return replacedLetters;
@@ -61,9 +57,6 @@ class LSystem {
                     matchedProduction = production;
                 }
             });
-            if (!matchedProduction) {
-                throw Error("Could not find any production to match " + letter.symbol);
-            }
             return matchedProduction;
         };
         this.axiom = axiom;
@@ -82,29 +75,35 @@ exports.default = LSystem;
  */
 function predecessorMatchesLetter(letter, predecessor, currentAxiom) {
     let pLetter = predecessor.letter;
-    if (pLetter.symbol !== letter.symbol)
+    if (!LetterMatchesLetter(pLetter, letter)) {
         return false;
+    }
     if (predecessor.context) {
         let context = predecessor.context;
         if (context.left) {
-            //TODO
+            //TODO: NEEDS INDEX, TO LEFT OR RIGHT.
         }
         if (context.right) {
             //TODO
         }
     }
-    if (letter.params) {
-        if (!pLetter.params || pLetter.params.length !== letter.params.length)
+    if (predecessor.condition) {
+        let conditionMatches = predecessor.condition(...letter.params);
+        if (!conditionMatches)
             return false;
-        if (predecessor.condition) {
-            let conditionMatches = predecessor.condition(...letter.params);
-            if (!conditionMatches)
-                return false;
+    }
+    return true;
+}
+function LetterMatchesLetter(l1, l2) {
+    if (l1.symbol !== l2.symbol)
+        return false;
+    if (l1.params) {
+        if (!l2.params || l1.params.length !== l2.params.length) {
+            return false;
         }
     }
     return true;
 }
-// HELPER FUNCTIONS FOR CLASS 
 /**
  * Given a production, returns the successor, choosing stochastically if there are many
  * @param {Production} production Producti
@@ -112,31 +111,23 @@ function predecessorMatchesLetter(letter, predecessor, currentAxiom) {
  */
 function chooseSuccessorStochastic(production) {
     if (production.successor instanceof Array) {
-        //TOOD: Make this properly stochastic
-        return production.successor[0];
+        let successors = production.successor;
+        let chances = successors.map((s) => s.weight ? s.weight : 1);
+        let runningSum = 0;
+        chances = chances.map((c, i) => {
+            let cSum = c + runningSum;
+            runningSum += c;
+            return cSum;
+        });
+        let random = Math.random() * runningSum;
+        let randLoc = chances.filter((e) => e <= random).length;
+        let randomSuccessor = successors[randLoc];
+        dPrint("Stochastically choosing: Total sum of chances is " + runningSum + " chose " + random + " At loc " + randLoc);
+        return randomSuccessor;
     }
     else {
         return production.successor;
     }
-}
-/**
- * TODO: MAYBE JUST REMOVE
- * Constructs a dictionary of params names to values by matching indices.
- * Assumes lengths of vParams == nParams
- * @param {ParamsValue} vParams Params values
- * @param {ParamsName} nParams  Params names
- * @returns {ParamsExpanded} Values matched to names
- */
-function createExpandedParams(vParams, nParams) {
-    let expandedParams = {};
-    if (vParams && nParams && vParams.length == nParams.length) {
-        for (let i = 0; i < vParams.length; i++) {
-            let paramValue = vParams[i];
-            let paramName = nParams[i];
-            expandedParams[paramName] = paramValue;
-        }
-    }
-    return expandedParams;
 }
 /**
  * Given a successor, and a set of params, return the set of letters (axiom) this expands to
