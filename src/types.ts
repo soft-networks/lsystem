@@ -12,10 +12,10 @@ type ParamsName = string[]
 interface ParamsExpanded {
   [name: string]: number | string;
 }
-type ParamsRule = ((...params: (number|string)[]) => (string|number))[];
+type ParamsRule = ((...params: (number|string)[]) => (string|number))[]
 type Condition = (...params: (number|string)[]) => boolean;
 type Params = ParamsValue | ParamsName | ParamsExpanded | ParamsRule;
-type Context = { left?: sym, right?: sym }
+type Context = { left?: Letter<ParamsName>, right?: Letter<ParamsName> }
 
 //Rules
 interface Predecessor {

@@ -62,31 +62,24 @@ export function parsePredecessor(predecessor: string) : Predecessor {
     //console.log("Found condition %s removed it now we have %s", conditionString, p);
   }
   //Now see if we have context, and parse them
-  let context: Context; 
+  let cLeft, cRight; 
   if (p.includes("<")) {
     let splitLeft = p.split("<");
     if (splitLeft.length !=2) 
       throw new Error("Mis constructed left context" + predecessor);
-    context = {
-      left: splitLeft[0]
-    }
+    cLeft = parseSentence(splitLeft[0], parseParamsArray)[0] as Letter<ParamsName>
     p = splitLeft[1].trim();
-    //console.log("Found context %s removed it now we have %s", p, context.left);
+    console.log("Found context %s removed it now we have %s", p, cLeft);
   }
   if (p.includes(">")) {
     let splitRight = p.split(">");
     if (splitRight.length !=2) 
       throw new Error("Mis constructed right context" + predecessor);
-    if (context) 
-      context.right = splitRight[1];
-    else {
-      context = {
-        right: splitRight[1]
-      }
-    }
+    cRight = parseSentence(splitRight[1], parseParamsArray)[0] as Letter<ParamsName>
     p = splitRight[0].trim();
-    //console.log("Found context, removed it, now we have", p, context.right);
+    console.log("Found context, removed it, now we have", p, cRight);
   }
+  let context: Context = cLeft || cRight ? {left: cLeft, right: cRight} : undefined;
   //Now we should only have ONE letter left
   let pAsLetter : Letter<ParamsName>[] = parseSentence(p, parseParamsArray) as Letter<ParamsName>[];
   if (pAsLetter.length !=1) {
@@ -225,3 +218,5 @@ function isNumeric(str: string) {
   return !isNaN(str as unknown as number) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
     !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
 }
+
+

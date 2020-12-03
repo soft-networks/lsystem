@@ -15,6 +15,9 @@ export default class LSystem {
     this.iterations = iterations || 1;
   }
 
+  setIterations = (i: number) => {
+    this.iterations = i;
+  }
   iterate = () => {
     let currentOutput = this.axiom;
     for (var i = 0; i < this.iterations; i++) {
@@ -28,10 +31,10 @@ export default class LSystem {
    */
   replace = (axiom: Axiom) => {
     let replacedLetters: Axiom = [];
-    axiom.forEach((letter) => {
+    axiom.forEach((letter, index) => {
       //1: Find the right production
       let production: Production;
-      production = this.findProduction(letter, axiom);
+      production = this.findProduction(letter, axiom, index);
       if (production) {
         //1.5: Choose a successor (in case there are multiple, to be chosen from stochastically)
         let successor : Successor= chooseSuccessorStochastic(production);
@@ -56,10 +59,10 @@ export default class LSystem {
    * @returns {Production}  The production that matches
    * @throws Errors if there are more than one, or no matches
    */
-  findProduction = (letter: Letter<ParamsValue>, currentAxiom: Axiom): Production => {
+  findProduction = (letter: Letter<ParamsValue>, currentAxiom: Axiom, currentIndex: number): Production => {
     let matchedProduction: Production | undefined;
     this.productions.forEach((production) => {
-      if (predecessorMatchesLetter(letter, production.predecessor, currentAxiom)) {
+      if (predecessorMatchesLetter(letter, production.predecessor, currentAxiom, currentIndex)) {
         if (matchedProduction)
           throw Error("Multiple productions are matching " + letter.symbol);
         matchedProduction = production;
@@ -77,18 +80,15 @@ export default class LSystem {
  * @param {Axiom} currentAxiom Current axiom we're working through, needed for context matching
  * @returns {boolean} whether or not its a match
  */
-function predecessorMatchesLetter(letter: Letter<ParamsValue>, predecessor: Predecessor, currentAxiom: Axiom): boolean {
+function predecessorMatchesLetter(letter: Letter<ParamsValue>, predecessor: Predecessor, currentAxiom: Axiom, currentIndex: number): boolean {
   let pLetter = predecessor.letter;
-  if (!LetterMatchesLetter(pLetter, letter)) {
+  if (!letterMatchesLetter(pLetter, letter)) {
     return false;
   }
+  
   if (predecessor.context) {
-    let context = predecessor.context;
-    if (context.left) {
-      //TODO: NEEDS INDEX, TO LEFT OR RIGHT.
-    }
-    if (context.right) {
-      //TODO
+    if (!contextMatchesAxiom(predecessor.context, currentAxiom, letter, currentIndex)) {
+      return false;
     }
   }
   if (predecessor.condition) {
@@ -98,7 +98,7 @@ function predecessorMatchesLetter(letter: Letter<ParamsValue>, predecessor: Pred
   }
   return true;
 }
-function LetterMatchesLetter(l1: Letter<Params>, l2: Letter<Params>) {
+function letterMatchesLetter(l1: Letter<Params>, l2: Letter<Params>) {
   if (l1.symbol !== l2.symbol) 
     return false;
   if (l1.params) {
@@ -108,6 +108,31 @@ function LetterMatchesLetter(l1: Letter<Params>, l2: Letter<Params>) {
   }
   return true;
 }
+function contextMatchesAxiom(context: Context, axiom: Axiom, currentLetter: Letter<Params>, currentIndex: number): boolean {
+  let lMatch, rMatch;
+  if (context.left) {
+    lMatch = false;
+    for(let i = currentIndex -1; i >=0 ; i--) {
+      lMatch = letterMatchesLetter(context.left, axiom[i]);
+      if (lMatch) {
+        break;
+      }
+    }
+  }
+  if (context.right) {
+    rMatch = false;
+    for(let i = currentIndex +1; i < axiom.length; i++) {
+      rMatch = letterMatchesLetter(context.right, axiom[i]);
+      if (rMatch) {
+        break;
+      }
+    }
+  }
+  if (lMatch === undefined) lMatch = true;
+  if (rMatch === undefined) rMatch = true;
+  dPrint("Completed context matching " + currentLetter.symbol + ", did find context = " + (lMatch && rMatch));
+  return lMatch && rMatch;
+} 
 /**
  * Given a production, returns the successor, choosing stochastically if there are many
  * @param {Production} production Producti

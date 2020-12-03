@@ -31,10 +31,10 @@ if (testSuccessor || runAllTests) {
   errorHelper("successor", successorErrors, (s,i) => parseSuccessor(s, successorInputParams[i]))
 }
 if (testPredecessor || runAllTests){
-  let predInputs = ["A", "A<B>C", "A<B(x,y)>C", "B(x,y){x>y}", "B(x,y){x+y>2}"];
+  let predInputs = ["A", "A<B>C", "A(x)<B(x,y)>C", "B(x,y){x>y}", "B(x,y){x+y>2}"];
   let predOutputs = [ gP(gL("A")), 
-                      gP(gL("B"), {left: "A", right:"C"}),
-                      gP(gL("B",["x","y"]), {left: "A", right:"C"}),
+                      gP(gL("B"), {left: gL("A"), right: gL("C")}),
+                      gP(gL("B",["x","y"]), {left: gL("A", ['x']), right:gL("C")}),
                       gP(gL("B",["x","y"]), undefined, function(x,y) { return x > y}),
                       gP(gL("B",["x","y"]), undefined, function(x,y) { return x + y > 2}),
                     ]
@@ -46,7 +46,7 @@ if (testProduction || runAllTests) {
   let productionInputs = ["A : AF", "A<B(x)>R:B(1)A","A(x,y){x>y}: A(x*2, y*3)F"]
   let productionOutputs = [ gPd(gP(gL("A")), 
                                 gS([gL("A"), gL("F")])),
-                            gPd(gP(gL("B",['x']), {left: 'A', right:'R'}), 
+                            gPd(gP(gL("B",['x']), {left: gL('A'), right:gL('R')}), 
                                 gS([gL("B",[(x) => 1]), gL("A")])),
                             gPd(gP(gL("A",['x', 'y']), undefined, (x,y) => x > y), 
                                 gS([gL("A",[(x,y) => x*2, (x,y) => y*3]), gL("F")]))]

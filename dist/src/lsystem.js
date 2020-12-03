@@ -6,6 +6,9 @@ let dPrint = (msg) => { if (debug) {
 } };
 class LSystem {
     constructor(axiom, productions, iterations) {
+        this.setIterations = (i) => {
+            this.iterations = i;
+        };
         this.iterate = () => {
             let currentOutput = this.axiom;
             for (var i = 0; i < this.iterations; i++) {
@@ -19,10 +22,10 @@ class LSystem {
          */
         this.replace = (axiom) => {
             let replacedLetters = [];
-            axiom.forEach((letter) => {
+            axiom.forEach((letter, index) => {
                 //1: Find the right production
                 let production;
-                production = this.findProduction(letter, axiom);
+                production = this.findProduction(letter, axiom, index);
                 if (production) {
                     //1.5: Choose a successor (in case there are multiple, to be chosen from stochastically)
                     let successor = chooseSuccessorStochastic(production);
@@ -48,10 +51,10 @@ class LSystem {
          * @returns {Production}  The production that matches
          * @throws Errors if there are more than one, or no matches
          */
-        this.findProduction = (letter, currentAxiom) => {
+        this.findProduction = (letter, currentAxiom, currentIndex) => {
             let matchedProduction;
             this.productions.forEach((production) => {
-                if (predecessorMatchesLetter(letter, production.predecessor, currentAxiom)) {
+                if (predecessorMatchesLetter(letter, production.predecessor, currentAxiom, currentIndex)) {
                     if (matchedProduction)
                         throw Error("Multiple productions are matching " + letter.symbol);
                     matchedProduction = production;
@@ -73,18 +76,14 @@ exports.default = LSystem;
  * @param {Axiom} currentAxiom Current axiom we're working through, needed for context matching
  * @returns {boolean} whether or not its a match
  */
-function predecessorMatchesLetter(letter, predecessor, currentAxiom) {
+function predecessorMatchesLetter(letter, predecessor, currentAxiom, currentIndex) {
     let pLetter = predecessor.letter;
-    if (!LetterMatchesLetter(pLetter, letter)) {
+    if (!letterMatchesLetter(pLetter, letter)) {
         return false;
     }
     if (predecessor.context) {
-        let context = predecessor.context;
-        if (context.left) {
-            //TODO: NEEDS INDEX, TO LEFT OR RIGHT.
-        }
-        if (context.right) {
-            //TODO
+        if (!contextMatchesAxiom(predecessor.context, currentAxiom, letter, currentIndex)) {
+            return false;
         }
     }
     if (predecessor.condition) {
@@ -94,7 +93,7 @@ function predecessorMatchesLetter(letter, predecessor, currentAxiom) {
     }
     return true;
 }
-function LetterMatchesLetter(l1, l2) {
+function letterMatchesLetter(l1, l2) {
     if (l1.symbol !== l2.symbol)
         return false;
     if (l1.params) {
@@ -103,6 +102,40 @@ function LetterMatchesLetter(l1, l2) {
         }
     }
     return true;
+}
+function contextMatchesAxiom(context, axiom, currentLetter, currentIndex) {
+    let lMatch, rMatch;
+    if (context.left) {
+        lMatch = false;
+        for (let i = currentIndex - 1; i >= 0; i--) {
+            console.log("Matching" + context.left.symbol + " to " + axiom[i].symbol);
+            lMatch = letterMatchesLetter(context.left, axiom[i]);
+            if (lMatch) {
+                console.log("Matched left context");
+                console.log(currentLetter);
+                console.log(axiom[i]);
+                break;
+            }
+        }
+    }
+    if (context.right) {
+        rMatch = false;
+        for (let i = currentIndex + 1; i < axiom.length; i++) {
+            rMatch = letterMatchesLetter(context.right, axiom[i]);
+            if (rMatch) {
+                console.log("Matched right context");
+                console.log(currentLetter);
+                console.log(axiom[i]);
+                break;
+            }
+        }
+    }
+    if (lMatch === undefined)
+        lMatch = true;
+    if (rMatch === undefined)
+        rMatch = true;
+    console.log("COMPLETED CONTEXT MATCHIN FOR " + currentLetter.symbol + " ON " + axiom + " RETURNING " + (lMatch && rMatch));
+    return lMatch && rMatch;
 }
 /**
  * Given a production, returns the successor, choosing stochastically if there are many
