@@ -69,7 +69,7 @@ export function parsePredecessor(predecessor: string) : Predecessor {
       throw new Error("Mis constructed left context" + predecessor);
     cLeft = parseSentence(splitLeft[0], parseParamsArray)[0] as Letter<ParamsName>
     p = splitLeft[1].trim();
-    console.log("Found context %s removed it now we have %s", p, cLeft);
+    //console.log("Found context %s removed it now we have %s", p, cLeft);
   }
   if (p.includes(">")) {
     let splitRight = p.split(">");
@@ -77,7 +77,7 @@ export function parsePredecessor(predecessor: string) : Predecessor {
       throw new Error("Mis constructed right context" + predecessor);
     cRight = parseSentence(splitRight[1], parseParamsArray)[0] as Letter<ParamsName>
     p = splitRight[0].trim();
-    console.log("Found context, removed it, now we have", p, cRight);
+    //console.log("Found context, removed it, now we have", p, cRight);
   }
   let context: Context = cLeft || cRight ? {left: cLeft, right: cRight} : undefined;
   //Now we should only have ONE letter left
@@ -220,3 +220,17 @@ function isNumeric(str: string) {
 }
 
 
+export function axiomToStr(sentence: Letter<Params>[]): string {
+  let axiomStr = sentence.reduce((str, l) => (str + letterToStr(l)), "");
+  return axiomStr;
+}
+
+export function letterToStr(letter: Letter<Params>): string {
+  let letterString = letter.symbol;
+  if (letter.params) {
+    let paramString = letter.params.toString();
+    paramString = "(" + paramString + ")";
+    letterString += paramString;
+  }
+  return letterString;
+}

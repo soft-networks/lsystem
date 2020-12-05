@@ -1,4 +1,5 @@
 
+import { axiomToStr } from "./parser";
 import {sym, Letter, ParamsValue, ParamsName, ParamsExpanded, ParamsRule, Params, Condition, Context, Predecessor, Successor, Axiom, Production} from "./types"
 
 let debug = false;
@@ -8,22 +9,22 @@ export default class LSystem {
   axiom: Axiom;
   productions: Production[];
   iterations: number;
-
   constructor(axiom: Axiom, productions: Production[], iterations?: number) {
     this.axiom = axiom;
     this.productions = productions;
     this.iterations = iterations || 1;
   }
-
   setIterations = (i: number) => {
     this.iterations = i;
   }
-  iterate = () => {
-    let currentOutput = this.axiom;
-    for (var i = 0; i < this.iterations; i++) {
-      currentOutput = this.replace(currentOutput);
+  iterate = (options?: {iterations?: number, asAxiom?: boolean}): string | Axiom => {
+    let output = this.axiom;
+    let it = options && options.iterations ? options.iterations : this.iterations;
+    for (var i = 0; i < it; i++) {
+      output = this.replace(output);
     }
-    return currentOutput;
+    let returnVal = options && options.asAxiom ? axiomToStr(output) : output; 
+    return returnVal;
   }
   /**
    * Replaces each letter of an axiom with the right successor.
