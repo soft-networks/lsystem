@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const parser_1 = require("./parser");
 let debug = false;
 let dPrint = (msg) => { if (debug) {
     console.log(msg);
@@ -9,12 +10,14 @@ class LSystem {
         this.setIterations = (i) => {
             this.iterations = i;
         };
-        this.iterate = () => {
-            let currentOutput = this.axiom;
-            for (var i = 0; i < this.iterations; i++) {
-                currentOutput = this.replace(currentOutput);
+        this.iterate = (options) => {
+            let output = this.axiom;
+            let it = options && options.iterations ? options.iterations : this.iterations;
+            for (var i = 0; i < it; i++) {
+                output = this.replace(output);
             }
-            return currentOutput;
+            let returnVal = options && options.asAxiom ? output : parser_1.axiomToStr(output);
+            return returnVal;
         };
         /**
          * Replaces each letter of an axiom with the right successor.
@@ -108,12 +111,8 @@ function contextMatchesAxiom(context, axiom, currentLetter, currentIndex) {
     if (context.left) {
         lMatch = false;
         for (let i = currentIndex - 1; i >= 0; i--) {
-            console.log("Matching" + context.left.symbol + " to " + axiom[i].symbol);
             lMatch = letterMatchesLetter(context.left, axiom[i]);
             if (lMatch) {
-                console.log("Matched left context");
-                console.log(currentLetter);
-                console.log(axiom[i]);
                 break;
             }
         }
@@ -123,9 +122,6 @@ function contextMatchesAxiom(context, axiom, currentLetter, currentIndex) {
         for (let i = currentIndex + 1; i < axiom.length; i++) {
             rMatch = letterMatchesLetter(context.right, axiom[i]);
             if (rMatch) {
-                console.log("Matched right context");
-                console.log(currentLetter);
-                console.log(axiom[i]);
                 break;
             }
         }
@@ -134,7 +130,7 @@ function contextMatchesAxiom(context, axiom, currentLetter, currentIndex) {
         lMatch = true;
     if (rMatch === undefined)
         rMatch = true;
-    console.log("COMPLETED CONTEXT MATCHIN FOR " + currentLetter.symbol + " ON " + axiom + " RETURNING " + (lMatch && rMatch));
+    dPrint("Completed context matching " + currentLetter.symbol + ", did find context = " + (lMatch && rMatch));
     return lMatch && rMatch;
 }
 /**

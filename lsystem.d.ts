@@ -35,6 +35,3 @@ interface Production {
   predecessor: Predecessor;
   successor: (Successor) | (Successor[])
 }
-
-
-export {sym, Letter, ParamsValue, ParamsName, ParamsExpanded,ParamsRule, Params, Condition, Context, Predecessor, Successor, Axiom, Production}

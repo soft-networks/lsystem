@@ -1,6 +1,4 @@
-
 import { axiomToStr } from "./parser";
-import {sym, Letter, ParamsValue, ParamsName, ParamsExpanded, ParamsRule, Params, Condition, Context, Predecessor, Successor, Axiom, Production} from "./types"
 
 let debug = false;
 let dPrint = (msg) => {if(debug) { console.log(msg)}};
@@ -23,7 +21,7 @@ export default class LSystem {
     for (var i = 0; i < it; i++) {
       output = this.replace(output);
     }
-    let returnVal = options && options.asAxiom ? axiomToStr(output) : output; 
+    let returnVal = options && options.asAxiom ?  output : axiomToStr(output); 
     return returnVal;
   }
   /**

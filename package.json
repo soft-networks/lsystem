@@ -2,12 +2,12 @@
   "name": "L-System",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/app.js",
+  "main": "dist/src/lsystem.js",
   "scripts": {
     "start-parser": "tsc && node dist/examples/parserOutputs.js",
     "start-lsystem": "tsc && node dist/examples/lSystemOutputs.js",
     "watch": "tsc -w",
-    "test": "jest tests"
+    "test": "jest test/*.test.ts"
   },
   "author": "Bhavik Singh",
   "license": "MIT License",

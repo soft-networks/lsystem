@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseSentence = exports.parseSuccessor = exports.parsePredecessor = exports.parseProduction = exports.parseProductions = exports.parseAxiom = void 0;
+exports.letterToStr = exports.axiomToStr = exports.parseSentence = exports.parseSuccessor = exports.parsePredecessor = exports.parseProduction = exports.parseProductions = exports.parseAxiom = void 0;
 let reservedChars = ["(", ")", ":", "{", "}"];
 function parseAxiom(axiom) {
     return parseSentence(axiom, parseParamsArray);
@@ -71,7 +71,7 @@ function parsePredecessor(predecessor) {
             throw new Error("Mis constructed left context" + predecessor);
         cLeft = parseSentence(splitLeft[0], parseParamsArray)[0];
         p = splitLeft[1].trim();
-        console.log("Found context %s removed it now we have %s", p, cLeft);
+        //console.log("Found context %s removed it now we have %s", p, cLeft);
     }
     if (p.includes(">")) {
         let splitRight = p.split(">");
@@ -79,7 +79,7 @@ function parsePredecessor(predecessor) {
             throw new Error("Mis constructed right context" + predecessor);
         cRight = parseSentence(splitRight[1], parseParamsArray)[0];
         p = splitRight[0].trim();
-        console.log("Found context, removed it, now we have", p, cRight);
+        //console.log("Found context, removed it, now we have", p, cRight);
     }
     let context = cLeft || cRight ? { left: cLeft, right: cRight } : undefined;
     //Now we should only have ONE letter left
@@ -219,4 +219,19 @@ function isNumeric(str) {
     return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
         !isNaN(parseFloat(str)); // ...and ensure strings of whitespace fail
 }
+function axiomToStr(sentence) {
+    let axiomStr = sentence.reduce((str, l) => (str + letterToStr(l)), "");
+    return axiomStr;
+}
+exports.axiomToStr = axiomToStr;
+function letterToStr(letter) {
+    let letterString = letter.symbol;
+    if (letter.params) {
+        let paramString = letter.params.toString();
+        paramString = "(" + paramString + ")";
+        letterString += paramString;
+    }
+    return letterString;
+}
+exports.letterToStr = letterToStr;
 //# sourceMappingURL=parser.js.map

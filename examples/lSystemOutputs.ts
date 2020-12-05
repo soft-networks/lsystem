@@ -1,6 +1,5 @@
 import LSystem from "../src/lsystem";
 import { parseAxiom, parseProduction, parseProductions } from "../src/parser";
-import { Axiom, Production } from "../src/types";
 import util from "util";
 
 

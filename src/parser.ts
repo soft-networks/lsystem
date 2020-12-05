@@ -1,6 +1,4 @@
 
-import {sym, Letter, ParamsValue, ParamsName, ParamsRule, Params, Condition, Context, Predecessor, Successor, Axiom, Production} from "./types"
-
 let reservedChars = ["(", ")", ":", "{", "}"]
 export function parseAxiom(axiom: string): Axiom {
   return parseSentence(axiom, parseParamsArray) as Axiom

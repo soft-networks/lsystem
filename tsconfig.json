@@ -7,6 +7,5 @@
     "sourceMap": true,
     "outDir": "dist"
   },
-  "exclude": ["**/*.test.ts"],
   "lib": [ "es2017", "es6", "dom"]
 }

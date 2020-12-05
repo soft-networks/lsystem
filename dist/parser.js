@@ -1,16 +1,39 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseSentence = exports.parseSuccessor = exports.parsePredecessor = exports.parseProduction = exports.parseAxiom = void 0;
+exports.letterToStr = exports.axiomToStr = exports.parseSentence = exports.parseSuccessor = exports.parsePredecessor = exports.parseProduction = exports.parseProductions = exports.parseAxiom = void 0;
 let reservedChars = ["(", ")", ":", "{", "}"];
 function parseAxiom(axiom) {
     return parseSentence(axiom, parseParamsArray);
 }
 exports.parseAxiom = parseAxiom;
-//TODO: ADD STOCHASTIC!
+//TODO: this will break if the strings aren't equivialent A(X), A(Y)
+function parseProductions(productionStrings) {
+    let productionMap = {};
+    productionStrings.forEach((productionString) => {
+        let splitString = splitProduction(productionString);
+        let predString = splitString[0].trim();
+        let existingProd = productionMap[predString];
+        if (existingProd) {
+            //console.log("Existing pred exists, adding to that directly");
+            let successorString = splitString[1].trim();
+            let successor = parseSuccessor(successorString, existingProd.predecessor.letter.params);
+            if (existingProd.successor instanceof Array) {
+                existingProd.successor.push(successor);
+            }
+            else {
+                existingProd.successor = [existingProd.successor, successor];
+            }
+        }
+        else {
+            productionMap[predString] = parseProduction(productionString);
+        }
+    });
+    let productions = Object.values(productionMap);
+    return productions;
+}
+exports.parseProductions = parseProductions;
 function parseProduction(productionString) {
-    let productionStringArray = productionString.split(":");
-    if (productionStringArray.length !== 2)
-        throw Error("Could not create production, wrong number of : delimiter");
+    let productionStringArray = splitProduction(productionString);
     let predecessor = parsePredecessor(productionStringArray[0]);
     let successor = parseSuccessor(productionStringArray[1], predecessor.letter.params);
     let production = {
@@ -19,8 +42,13 @@ function parseProduction(productionString) {
     return production;
 }
 exports.parseProduction = parseProduction;
+function splitProduction(productionString) {
+    let productionStringArray = productionString.split(":");
+    if (productionStringArray.length !== 2)
+        throw Error("Could not create production, wrong number of : delimiter");
+    return productionStringArray;
+}
 //TODO: ASSUMES CONTEXT HAS NO PARAMS. FIX.
-//TODO: ONLY ONE CONDITION IS POSSIBLE FOR NOW.
 function parsePredecessor(predecessor) {
     let p = predecessor.slice().trim();
     //See if we have a condition. Remove it from string. 
@@ -36,31 +64,24 @@ function parsePredecessor(predecessor) {
         //console.log("Found condition %s removed it now we have %s", conditionString, p);
     }
     //Now see if we have context, and parse them
-    let context;
+    let cLeft, cRight;
     if (p.includes("<")) {
         let splitLeft = p.split("<");
         if (splitLeft.length != 2)
             throw new Error("Mis constructed left context" + predecessor);
-        context = {
-            left: splitLeft[0]
-        };
+        cLeft = parseSentence(splitLeft[0], parseParamsArray)[0];
         p = splitLeft[1].trim();
-        //console.log("Found context %s removed it now we have %s", p, context.left);
+        //console.log("Found context %s removed it now we have %s", p, cLeft);
     }
     if (p.includes(">")) {
         let splitRight = p.split(">");
         if (splitRight.length != 2)
             throw new Error("Mis constructed right context" + predecessor);
-        if (context)
-            context.right = splitRight[1];
-        else {
-            context = {
-                right: splitRight[1]
-            };
-        }
+        cRight = parseSentence(splitRight[1], parseParamsArray)[0];
         p = splitRight[0].trim();
-        //console.log("Found context, removed it, now we have", p, context.right);
+        //console.log("Found context, removed it, now we have", p, cRight);
     }
+    let context = cLeft || cRight ? { left: cLeft, right: cRight } : undefined;
     //Now we should only have ONE letter left
     let pAsLetter = parseSentence(p, parseParamsArray);
     if (pAsLetter.length != 1) {
@@ -84,9 +105,24 @@ function parsePredecessor(predecessor) {
 }
 exports.parsePredecessor = parsePredecessor;
 function parseSuccessor(successor, paramsName) {
-    let sLetters = parseSentence(successor, (str) => parseFunctions(str, paramsName));
+    let s = successor, weight;
+    if (s.includes("{") || s.includes("}")) {
+        if (!(s.includes("{") && s.includes("}")))
+            throw Error("Mis constructed weight in %s needs open and closed braces " + s);
+        let startPos = s.indexOf("{");
+        let endPos = s.indexOf("}");
+        let weightString = s.substring(startPos + 1, endPos);
+        if (!isNumeric(weightString)) {
+            throw Error("Weight needs to be numeric" + weightString);
+        }
+        weight = parseFloat(weightString.trim());
+        //TOOD: Clean up this code a bit
+        s = s.replace("{" + weightString + "}", "").trim();
+    }
+    let sLetters = parseSentence(s, (str) => parseFunctions(str, paramsName));
     return {
-        letters: sLetters
+        letters: sLetters,
+        weight: weight
     };
 }
 exports.parseSuccessor = parseSuccessor;
@@ -183,4 +219,19 @@ function isNumeric(str) {
     return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
         !isNaN(parseFloat(str)); // ...and ensure strings of whitespace fail
 }
+function axiomToStr(sentence) {
+    let axiomStr = sentence.reduce((str, l) => (str + letterToStr(l)), "");
+    return axiomStr;
+}
+exports.axiomToStr = axiomToStr;
+function letterToStr(letter) {
+    let letterString = letter.symbol;
+    if (letter.params) {
+        let paramString = letter.params.toString();
+        paramString = "(" + paramString + ")";
+        letterString += paramString;
+    }
+    return letterString;
+}
+exports.letterToStr = letterToStr;
 //# sourceMappingURL=parser.js.map
