@@ -123,7 +123,7 @@ export function parseSuccessor(successor: string, paramsName: ParamsName) : Succ
 } 
 
 //IMPORTANT HELPERS
-export function parseSentence(axiom: string, paramParser: (string) => Params): Letter<Params>[] {
+function parseSentence(axiom: string, paramParser: (string) => Params): Letter<Params>[] {
   axiom = axiom.trim();
   let numLetters = axiom.length;
   let parsedLetters: Letter<Params>[] = [];
@@ -223,7 +223,7 @@ export function axiomToStr(sentence: Letter<Params>[]): string {
   return axiomStr;
 }
 
-export function letterToStr(letter: Letter<Params>): string {
+function letterToStr(letter: Letter<Params>): string {
   let letterString = letter.symbol;
   if (letter.params) {
     let paramString = letter.params.toString();

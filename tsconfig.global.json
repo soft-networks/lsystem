@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist/",
+    "declaration": true
+  },
+  // Only point to typings and the start of your source, e.g. `src/index.ts`
+  "include": [ "src/*"],
+  "exclude": ["node_modules", "examples/", "test/"]
+ }

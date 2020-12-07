@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.letterToStr = exports.axiomToStr = exports.parseSentence = exports.parseSuccessor = exports.parsePredecessor = exports.parseProduction = exports.parseProductions = exports.parseAxiom = void 0;
+exports.axiomToStr = exports.parseSuccessor = exports.parsePredecessor = exports.parseProduction = exports.parseProductions = exports.parseAxiom = void 0;
 let reservedChars = ["(", ")", ":", "{", "}"];
 function parseAxiom(axiom) {
     return parseSentence(axiom, parseParamsArray);
@@ -156,7 +156,6 @@ function parseSentence(axiom, paramParser) {
     }
     return parsedLetters;
 }
-exports.parseSentence = parseSentence;
 function parseParamsArray(paramsString) {
     //console.log("Trimmed paramstring to" +  paramsString);
     let paramsArray = [];
@@ -233,5 +232,3 @@ function letterToStr(letter) {
     }
     return letterString;
 }
-exports.letterToStr = letterToStr;
-//# sourceMappingURL=parser.js.map

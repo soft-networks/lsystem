@@ -1,13 +1,14 @@
 {
-  "name": "L-System",
+  "name": "@bvk/lsystem",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/src/lsystem.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start-parser": "tsc && node dist/examples/parserOutputs.js",
-    "start-lsystem": "tsc && node dist/examples/lSystemOutputs.js",
-    "watch": "tsc -w",
-    "test": "jest test/*.test.ts"
+    "start-parser": "ts-node examples/lSystemOutputs.ts ",
+    "start-lsystem": "ts-node examples/lSystemOutputs.ts",
+    "watch": "tsc -p tsconfig.global.json -w",
+    "build": "tsc -p tsconfig.global.json",
+    "test": "jest test"
   },
   "author": "Bhavik Singh",
   "license": "MIT License",
