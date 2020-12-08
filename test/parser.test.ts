@@ -1,4 +1,5 @@
 import {parseAxiom, parsePredecessor, parseProduction, parseProductions, parseSuccessor} from "../src/parser";
+import {Letter, Params, Successor } from "../src/interfaces"
 
 
 let runAllTests = true;

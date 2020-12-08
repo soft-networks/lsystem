@@ -1,12 +1,13 @@
+import { Letter, Axiom, ParamsValue, Production } from "./interfaces";
 export default class LSystem {
     axiom: Axiom;
     productions: Production[];
     iterations: number;
-    constructor(axiom: Axiom, productions: Production[], iterations?: number);
+    constructor(axiom: Axiom | string, productions: Production[] | string[], iterations?: number);
     setIterations: (i: number) => void;
-    iterate: (options?: {
+    iterate: (params?: {
         iterations?: number;
-        asAxiom?: boolean;
+        asString?: boolean;
     }) => string | Axiom;
     /**
      * Replaces each letter of an axiom with the right successor.

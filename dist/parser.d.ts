@@ -1,3 +1,4 @@
+import { Letter, Axiom, ParamsName, Params, Production, Predecessor, Successor } from "./interfaces";
 export declare function parseAxiom(axiom: string): Axiom;
 export declare function parseProductions(productionStrings: string[]): Production[];
 export declare function parseProduction(productionString: string): Production;

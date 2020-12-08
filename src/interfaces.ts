@@ -1,23 +1,25 @@
-
-//Core values
+//Core Types
 type sym = string;
-interface Letter<ParamType extends Params> {
+interface Letter<ParamType extends Params = Params> {
   symbol: sym;
   params?: ParamType;
 }
+type Axiom =
+  Letter<ParamsValue>[]
 
-//Types for Parameters
+//ParamTypes
 type ParamsValue = (string | number)[]
 type ParamsName = string[]
-interface ParamsExpanded {
-  [name: string]: number | string;
-}
 type ParamsRule = ((...params: (number|string)[]) => (string|number))[]
 type Condition = (...params: (number|string)[]) => boolean;
-type Params = ParamsValue | ParamsName | ParamsExpanded | ParamsRule;
+type Params = ParamsValue | ParamsName |  ParamsRule;
 type Context = { left?: Letter<ParamsName>, right?: Letter<ParamsName> }
 
-//Rules
+//Productions and rules
+interface Production {
+  predecessor: Predecessor;
+  successor: (Successor) | (Successor[])
+}
 interface Predecessor {
   letter: Letter<ParamsName>;
   context?: Context;
@@ -28,10 +30,5 @@ interface Successor {
   weight?: number
 }
 
-type Axiom =
-  Letter<ParamsValue>[]
+export {sym, Letter, Axiom, ParamsValue, ParamsName, ParamsRule, Condition, Params, Context, Production, Predecessor, Successor }
 
-interface Production {
-  predecessor: Predecessor;
-  successor: (Successor) | (Successor[])
-}

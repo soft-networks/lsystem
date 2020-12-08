@@ -1,3 +1,4 @@
+import {Letter, Axiom, ParamsValue, ParamsName, ParamsRule, Condition, Params, Context, Production, Predecessor, Successor } from "./interfaces"
 
 let reservedChars = ["(", ")", ":", "{", "}"]
 export function parseAxiom(axiom: string): Axiom {

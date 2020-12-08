@@ -1,4 +1,5 @@
-import { axiomToStr } from "./parser";
+import { parseAxiom, parsePredecessor, parseProductions, axiomToStr } from "./parser";
+import {sym, Letter, Axiom, ParamsValue,  Params, Context, Production, Predecessor, Successor } from "./interfaces"
 
 let debug = false;
 let dPrint = (msg) => {if(debug) { console.log(msg)}};
@@ -7,22 +8,29 @@ export default class LSystem {
   axiom: Axiom;
   productions: Production[];
   iterations: number;
-  constructor(axiom: Axiom, productions: Production[], iterations?: number) {
-    this.axiom = axiom;
-    this.productions = productions;
+  constructor(axiom: Axiom | string, productions: Production[] | string[], iterations?: number) {
+    if (axiom[0] && (axiom[0] as Letter).symbol) {
+      this.axiom = axiom as Axiom;
+    } else {
+      this.axiom = parseAxiom(axiom as string);
+    }
+    if (productions[0] && (productions[0] as Production).predecessor) {
+      this.productions = productions as Production[];
+    } else {
+      this.productions = parseProductions(productions as string[])
+    }
     this.iterations = iterations || 1;
   }
   setIterations = (i: number) => {
     this.iterations = i;
   }
-  iterate = (options?: {iterations?: number, asAxiom?: boolean}): string | Axiom => {
+  iterate = (params: {iterations?: number, asString?: boolean} = {}): string | Axiom => {
+    let {iterations = this.iterations, asString = true} = params;
     let output = this.axiom;
-    let it = options && options.iterations ? options.iterations : this.iterations;
-    for (var i = 0; i < it; i++) {
+    for (var i = 0; i < iterations; i++) {
       output = this.replace(output);
     }
-    let returnVal = options && options.asAxiom ?  output : axiomToStr(output); 
-    return returnVal;
+    return asString ? axiomToStr(output) : output;
   }
   /**
    * Replaces each letter of an axiom with the right successor.

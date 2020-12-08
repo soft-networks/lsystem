@@ -1,18 +1,12 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./parser"), exports);
+exports.parseProductions = exports.parseProduction = exports.parseAxiom = void 0;
+const parser_1 = require("./parser");
+Object.defineProperty(exports, "parseAxiom", { enumerable: true, get: function () { return parser_1.parseAxiom; } });
+Object.defineProperty(exports, "parseProduction", { enumerable: true, get: function () { return parser_1.parseProduction; } });
+Object.defineProperty(exports, "parseProductions", { enumerable: true, get: function () { return parser_1.parseProductions; } });
 const lsystem_1 = __importDefault(require("./lsystem"));
 exports.default = lsystem_1.default;

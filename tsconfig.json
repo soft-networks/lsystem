@@ -5,6 +5,7 @@
     "declaration": true,
     "outDir": "out/",
   },
+  "exclude": ["dist/*.d.ts"],
   "ts-node": {
     "files": true
   },

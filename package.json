@@ -1,10 +1,11 @@
 {
   "name": "@bvk/lsystem",
-  "version": "0.0.1",
+  "version": "0.0.13",
   "description": "",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start-parser": "ts-node examples/lSystemOutputs.ts ",
+    "start-parser": "ts-node examples/parserOutputs.ts ",
     "start-lsystem": "ts-node examples/lSystemOutputs.ts",
     "watch": "tsc -p tsconfig.global.json -w",
     "build": "tsc -p tsconfig.global.json",

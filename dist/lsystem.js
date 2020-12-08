@@ -10,14 +10,13 @@ class LSystem {
         this.setIterations = (i) => {
             this.iterations = i;
         };
-        this.iterate = (options) => {
+        this.iterate = (params = {}) => {
+            let { iterations = this.iterations, asString = true } = params;
             let output = this.axiom;
-            let it = options && options.iterations ? options.iterations : this.iterations;
-            for (var i = 0; i < it; i++) {
+            for (var i = 0; i < iterations; i++) {
                 output = this.replace(output);
             }
-            let returnVal = options && options.asAxiom ? output : parser_1.axiomToStr(output);
-            return returnVal;
+            return asString ? parser_1.axiomToStr(output) : output;
         };
         /**
          * Replaces each letter of an axiom with the right successor.
@@ -65,8 +64,18 @@ class LSystem {
             });
             return matchedProduction;
         };
-        this.axiom = axiom;
-        this.productions = productions;
+        if (axiom[0] && axiom[0].symbol) {
+            this.axiom = axiom;
+        }
+        else {
+            this.axiom = parser_1.parseAxiom(axiom);
+        }
+        if (productions[0] && productions[0].predecessor) {
+            this.productions = productions;
+        }
+        else {
+            this.productions = parser_1.parseProductions(productions);
+        }
         this.iterations = iterations || 1;
     }
 }
