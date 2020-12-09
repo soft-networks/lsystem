@@ -3,12 +3,15 @@ export default class LSystem {
     axiom: Axiom;
     productions: Production[];
     iterations: number;
+    outputs: Axiom[];
     constructor(axiom: Axiom | string, productions: Production[] | string[], iterations?: number);
-    setIterations: (i: number) => void;
-    iterate: (params?: {
-        iterations?: number;
-        asString?: boolean;
-    }) => string | Axiom;
+    iterate: (n?: number) => string;
+    setIterations: (n: number) => void;
+    getAllIterationsAsString: (n?: number) => string[];
+    getAllIterationsAsObject: (n?: number) => Axiom[];
+    getIterationAsString: (n?: number) => string;
+    getIterationAsObject: (n?: number) => Axiom;
+    resetStoredIterations: () => void;
     /**
      * Replaces each letter of an axiom with the right successor.
      * @param axiom

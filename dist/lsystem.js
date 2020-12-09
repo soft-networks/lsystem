@@ -7,16 +7,37 @@ let dPrint = (msg) => { if (debug) {
 } };
 class LSystem {
     constructor(axiom, productions, iterations) {
-        this.setIterations = (i) => {
-            this.iterations = i;
-        };
-        this.iterate = (params = {}) => {
-            let { iterations = this.iterations, asString = true } = params;
-            let output = this.axiom;
-            for (var i = 0; i < iterations; i++) {
+        this.iterate = (n = this.iterations) => {
+            let output = this.outputs[this.outputs.length - 1];
+            for (var i = this.outputs.length; i <= n; i++) {
                 output = this.replace(output);
+                this.outputs.push(output);
             }
-            return asString ? parser_1.axiomToStr(output) : output;
+            return this.getIterationAsString(n);
+        };
+        this.setIterations = (n) => {
+            this.iterations = n;
+        };
+        this.getAllIterationsAsString = (n = this.iterations) => {
+            return this.getAllIterationsAsObject().map((asObj) => (parser_1.axiomToStr(asObj)));
+        };
+        this.getAllIterationsAsObject = (n = this.iterations) => {
+            if (!this.outputs[n]) {
+                this.iterate(n);
+            }
+            return this.outputs;
+        };
+        this.getIterationAsString = (n = this.iterations) => {
+            return parser_1.axiomToStr(this.getIterationAsObject(n));
+        };
+        this.getIterationAsObject = (n = this.iterations) => {
+            if (!this.outputs[n]) {
+                this.iterate(n);
+            }
+            return this.outputs[n];
+        };
+        this.resetStoredIterations = () => {
+            this.outputs = [this.axiom];
         };
         /**
          * Replaces each letter of an axiom with the right successor.
@@ -77,6 +98,8 @@ class LSystem {
             this.productions = parser_1.parseProductions(productions);
         }
         this.iterations = iterations || 1;
+        this.outputs = [this.axiom];
+        this.iterate();
     }
 }
 exports.default = LSystem;

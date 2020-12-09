@@ -189,7 +189,12 @@ function parseFunc(evalString, paramsNames) {
     let returnString = "return " + evalString;
     let functionString = `function (${paramString}) { ${returnString};}`;
     //console.log("Creating function " + functionString);
-    var func = new Function("return " + functionString)();
+    try {
+        var func = new Function("return " + functionString)();
+    }
+    catch (e) {
+        throw new Error("Could not create function from " + functionString);
+    }
     return func;
 }
 function findEndBracket(axiom, startingPos) {
