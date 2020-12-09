@@ -1,6 +1,6 @@
 {
   "name": "@bvk/lsystem",
-  "version": "0.0.13",
+  "version": "0.0.131",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

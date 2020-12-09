@@ -22,7 +22,9 @@ simpleTestCases.forEach((testCase) => {
   test(testCase.name, () => {
     let l = new LSystem(testCase.axiom, testCase.productions, testCase.iterations);
     let output = l.iterate();
+    let outputAsString = l.getIterationAsString();
     expect(testCase.expectedOutput).toEqual(output);
+    expect(output).toEqual(outputAsString);
   })
 })
 
@@ -32,17 +34,28 @@ let overLoadTestCase = simpleTestCases[0];
 let overLoadOutput = "FFA(2)XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 test(overLoadTestCase.name + " overloaded iterations", () => {
   let l = new LSystem(overLoadTestCase.axiom, overLoadTestCase.productions, 1);
-  let output = l.iterate({iterations: overLoadIterations});
+  let output = l.iterate(overLoadIterations);
   expect(overLoadOutput).toEqual(output);
 })
 
 
+//Returning as object
 test('Return as object', () => {
   let l = new LSystem("A", ["A:B"], 1);
-  let output = l.iterate({asString: false});
+  let output = l.getIterationAsObject();
   let expected : Axiom = [{symbol: "B"}];
   expect(expected).toEqual(output);
 })
+
+test('Storing of inputs', () => {
+  let l = new LSystem("A", ["A:AB"], 1);
+  let e1 = ["A", "AB"];
+  expect(e1).toEqual(l.getAllIterationsAsString());
+  let e5 = ["A", "AB", "ABB", "ABBB", "ABBBB", "ABBBBB"];
+  l.iterate(5);
+  expect(e5).toEqual(l.getAllIterationsAsString());
+})
+
 
 //TODO:
 // TEST WEIGHTED OUTPUT

@@ -8,6 +8,7 @@ export default class LSystem {
   axiom: Axiom;
   productions: Production[];
   iterations: number;
+  outputs: Axiom[];
   constructor(axiom: Axiom | string, productions: Production[] | string[], iterations?: number) {
     if (axiom[0] && (axiom[0] as Letter).symbol) {
       this.axiom = axiom as Axiom;
@@ -20,17 +21,40 @@ export default class LSystem {
       this.productions = parseProductions(productions as string[])
     }
     this.iterations = iterations || 1;
+    this.outputs = [this.axiom];
+    this.iterate();
   }
-  setIterations = (i: number) => {
-    this.iterations = i;
-  }
-  iterate = (params: {iterations?: number, asString?: boolean} = {}): string | Axiom => {
-    let {iterations = this.iterations, asString = true} = params;
-    let output = this.axiom;
-    for (var i = 0; i < iterations; i++) {
+  iterate = (n = this.iterations) => {
+    let output = this.outputs[this.outputs.length - 1];
+    for (var i = this.outputs.length; i <= n; i++) {
       output = this.replace(output);
+      this.outputs.push(output);
     }
-    return asString ? axiomToStr(output) : output;
+    return this.getIterationAsString(n);
+  }
+  setIterations = (n: number) => {
+    this.iterations = n;
+  }
+  getAllIterationsAsString = (n = this.iterations): string[] => {
+    return this.getAllIterationsAsObject().map((asObj) => (axiomToStr(asObj)));
+  }
+  getAllIterationsAsObject = (n = this.iterations): Axiom[] => {
+    if (!this.outputs[n]) {
+      this.iterate(n);
+    }
+    return this.outputs;
+  }
+  getIterationAsString = (n = this.iterations): string => {
+    return axiomToStr(this.getIterationAsObject(n));
+  }
+  getIterationAsObject = (n = this.iterations): Axiom => {
+    if (!this.outputs[n]) {
+      this.iterate(n);
+    }
+    return this.outputs[n];
+  }
+  resetStoredIterations = () => {
+    this.outputs = [this.axiom];
   }
   /**
    * Replaces each letter of an axiom with the right successor.

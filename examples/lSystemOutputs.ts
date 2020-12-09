@@ -18,7 +18,7 @@ console.log(r1);
 
 let override = 50;
 console.log("*** Iterating " + override + " times");
-let r1_b = l1.iterate({iterations: 50});
+let r1_b = l1.iterate(override);
 console.log(r1_b);
 
 
