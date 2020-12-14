@@ -1,5 +1,7 @@
 import {parseAxiom, parsePredecessor, parseProduction, parseProductions, parseSuccessor} from "../src/parser";
 import {Letter, Params, Successor } from "../src/interfaces"
+import LSystem from "../src";
+import util from "util"
 
 
 let runAllTests = true;
@@ -60,8 +62,8 @@ if (testStochastic || runAllTests) {
                           gS([gL("X")]), gS([gL("Y")]), gS([gL("B")]))],
                       [gPds(gP(gL("A", ['r'])),
                            gS([gL("R")]), gS([gL("R")],2))]
-                      ]
-  runnerHelper("Stochastic", stochInputs, stochOutputs, parseProductions, compareProductions);                    
+                      ]              
+  runnerHelper("Stochastic", stochInputs, stochOutputs, (p) =>  new LSystem("A", p).productions, compareProductions);                    
 }
 
 //COMPARISON FUNCTIONS
@@ -119,9 +121,13 @@ function compareSuccessor(tOut, sOut) {
 function runnerHelper(type, tInputs, tOutputs, converter, tester) {
   tInputs.forEach((tInput, index) => {
     let tOut = tOutputs[index];
-    let actual = converter(tInput, index);
     test(type + ": " + tInput, () => {
+      try {
+      let actual = converter(tInput, index);
       tester(tOut, actual);
+      } catch (e) {
+        fail(e);
+      }
     })
   })
 }

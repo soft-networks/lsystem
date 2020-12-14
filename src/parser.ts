@@ -5,27 +5,8 @@ export function parseAxiom(axiom: string): Axiom {
   return parseSentence(axiom, parseParamsArray) as Axiom
 }
 
-//TODO: this will break if the strings aren't equivialent A(X), A(Y)
 export function parseProductions(productionStrings: string[]) {
-  let productionMap : { [predString: string]: Production} = {}
-  productionStrings.forEach((productionString)=> {
-   let splitString = splitProduction(productionString);
-   let predString = splitString[0].trim();
-   let existingProd = productionMap[predString];
-   if (existingProd) {
-     //console.log("Existing pred exists, adding to that directly");
-     let successorString = splitString[1].trim();
-     let successor : Successor = parseSuccessor(successorString, existingProd.predecessor.letter.params);
-     if (existingProd.successor instanceof Array) {
-      existingProd.successor.push(successor);
-     } else {
-       existingProd.successor = [existingProd.successor as Successor, successor];
-     }
-   } else {
-     productionMap[predString] = parseProduction(productionString);
-   }
-  })
-  let productions = Object.values(productionMap);
+  let productions : Production[] = productionStrings.map((pS) => parseProduction(pS));
   return productions;
 }
 

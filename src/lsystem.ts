@@ -1,4 +1,4 @@
-import { parseAxiom, parsePredecessor, parseProductions, axiomToStr } from "./parser";
+import { parseAxiom, parsePredecessor, parseProductions, axiomToStr, parseProduction } from "./parser";
 import {sym, Letter, Axiom, ParamsValue,  Params, Context, Production, Predecessor, Successor } from "./interfaces"
 
 let debug = false;
@@ -6,7 +6,7 @@ let dPrint = (msg) => {if(debug) { console.log(msg)}};
 
 export default class LSystem {
   axiom: Axiom;
-  productions: Production[];
+  productions: Production[] = [];
   iterations: number;
   outputs: Axiom[];
   constructor(axiom: Axiom | string, productions: Production[] | string[], iterations?: number) {
@@ -15,11 +15,7 @@ export default class LSystem {
     } else {
       this.axiom = parseAxiom(axiom as string);
     }
-    if (productions[0] && (productions[0] as Production).predecessor) {
-      this.productions = productions as Production[];
-    } else {
-      this.productions = parseProductions(productions as string[])
-    }
+    productions.forEach((p) => {this.addProduction(p)});
     this.iterations = iterations || 1;
     this.outputs = [this.axiom];
     this.iterate();
@@ -52,6 +48,28 @@ export default class LSystem {
       this.iterate(n);
     }
     return this.outputs[n];
+  }
+  addProduction = (p: Production | string) => {
+    if (! (p as Production).predecessor) {
+      p = parseProduction(p as string);
+    }
+    let nP = p as Production;
+    if (this.productions.length == 0) {
+      this.productions.push(nP);
+      return;
+    }
+    this.productions.forEach((oProd) => {
+      if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
+        let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
+        if (oProd.successor instanceof Array) {
+          oProd.successor = [...oProd.successor, ...nSuccessorAsArray];
+        } else {
+          oProd.successor = [oProd.successor, ...nSuccessorAsArray];
+        }
+      } else {
+        this.productions.push(nP);
+      }
+    });
   }
   resetStoredIterations = () => {
     this.outputs = [this.axiom];
@@ -103,6 +121,32 @@ export default class LSystem {
   }
 }
 
+function predecessorMatchesPredeecessor(p1: Predecessor, p2: Predecessor) {
+  if (!letterMatchesLetter(p1.letter, p2.letter)) {
+    return false
+  }
+  if (p1.context) {
+    if (!p2.context) {
+      return false;
+    }
+    if (p1.context.left) {
+      if (!p2.context.left || !letterMatchesLetter(p1.context.left, p2.context.left)) {
+        return false;
+      }
+    }
+    if (p1.context.right) {
+      if (!p2.context.right || !letterMatchesLetter(p1.context.left, p2.context.left)) {
+        return false;
+      }
+    }
+  }
+  if (p1.condition) {
+    if (!p2.condition || p1.condition.toString() != p2.condition.toString()) {
+      return false
+    }
+  }
+  return true;
+}
 /**
  * Given a letter and a predecessor, see's if they match
  * Performs checks for symbol equality, context, param lenghts, as well as conditions
