@@ -19,3 +19,5 @@ More docs, and examples to come :)
 - [ ] Fix npmignore (remove it and just do "include" in package.json?)
 - [ ] Rewrite parser.ts to use a lexer / parser
 - [ ] Add Readme
+- [ ] Performance
+  - LSystem constructor is slow (loops through productions every time), can be faster by using a map
