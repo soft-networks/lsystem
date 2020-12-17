@@ -155,6 +155,9 @@ function parseParamsArray(paramsString: string): ParamsValue | ParamsName {
   return paramsArray;
 }
 function parseFunctions(evalString: string, paramsNames: ParamsName) {
+  if (!paramsNames) {
+    paramsNames = []
+  }
   let functionStringArray = evalString.split(",");
   let functions : ParamsRule = [];
   functionStringArray.forEach((functionString)=>{

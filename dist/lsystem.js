@@ -7,6 +7,7 @@ let dPrint = (msg) => { if (debug) {
 } };
 class LSystem {
     constructor(axiom, productions, iterations) {
+        this.productions = [];
         this.iterate = (n = this.iterations) => {
             let output = this.outputs[this.outputs.length - 1];
             for (var i = this.outputs.length; i <= n; i++) {
@@ -35,6 +36,40 @@ class LSystem {
                 this.iterate(n);
             }
             return this.outputs[n];
+        };
+        this.addProduction = (p) => {
+            let ps = p;
+            if (!p.predecessor) {
+                p = parser_1.parseProduction(p);
+            }
+            let nP = p;
+            if (this.productions.length == 0) {
+                this.productions.push(nP);
+                console.log("First production added: " + ps);
+                return;
+            }
+            let matchedAny = false;
+            this.productions.forEach((oProd) => {
+                if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
+                    console.log("Production matched, appending successor" + ps);
+                    matchedAny = true;
+                    let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
+                    if (oProd.successor instanceof Array) {
+                        oProd.successor = [...oProd.successor, ...nSuccessorAsArray];
+                    }
+                    else {
+                        oProd.successor = [oProd.successor, ...nSuccessorAsArray];
+                    }
+                    //TODO: There is  a weird edge case here where if many match, it can get appended twice.
+                    // Though this technically should not happen
+                }
+                else {
+                    matchedAny = false;
+                }
+            });
+            if (!matchedAny) {
+                this.productions.push(nP);
+            }
         };
         this.resetStoredIterations = () => {
             this.outputs = [this.axiom];
@@ -91,18 +126,39 @@ class LSystem {
         else {
             this.axiom = parser_1.parseAxiom(axiom);
         }
-        if (productions[0] && productions[0].predecessor) {
-            this.productions = productions;
-        }
-        else {
-            this.productions = parser_1.parseProductions(productions);
-        }
+        productions.forEach((p) => { this.addProduction(p); });
         this.iterations = iterations || 1;
         this.outputs = [this.axiom];
         this.iterate();
     }
 }
 exports.default = LSystem;
+function predecessorMatchesPredeecessor(p1, p2) {
+    if (!letterMatchesLetter(p1.letter, p2.letter)) {
+        return false;
+    }
+    if (p1.context) {
+        if (!p2.context) {
+            return false;
+        }
+        if (p1.context.left) {
+            if (!p2.context.left || !letterMatchesLetter(p1.context.left, p2.context.left)) {
+                return false;
+            }
+        }
+        if (p1.context.right) {
+            if (!p2.context.right || !letterMatchesLetter(p1.context.left, p2.context.left)) {
+                return false;
+            }
+        }
+    }
+    if (p1.condition) {
+        if (!p2.condition || p1.condition.toString() != p2.condition.toString()) {
+            return false;
+        }
+    }
+    return true;
+}
 /**
  * Given a letter and a predecessor, see's if they match
  * Performs checks for symbol equality, context, param lenghts, as well as conditions
@@ -202,7 +258,11 @@ function expandSuccessor(successor, params) {
         let newLetter = { symbol: sLetter.symbol };
         if (sLetter.params) {
             let evaluatedParams = [];
+            console.log("ABOUT TO CRASH EH");
+            console.log(sLetter.params);
+            console.log(params);
             sLetter.params.forEach((paramRule) => {
+                if (!params) params = []
                 let evaluatedParam = paramRule(...params);
                 evaluatedParams.push(evaluatedParam);
             });

@@ -50,26 +50,36 @@ export default class LSystem {
     return this.outputs[n];
   }
   addProduction = (p: Production | string) => {
+    let ps = p;
     if (! (p as Production).predecessor) {
       p = parseProduction(p as string);
     }
     let nP = p as Production;
     if (this.productions.length == 0) {
       this.productions.push(nP);
+      console.log("First production added: " + ps);
       return;
     }
+    let matchedAny = false;
     this.productions.forEach((oProd) => {
       if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
+        console.log("Production matched, appending successor" + ps);
+        matchedAny = true;
         let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
         if (oProd.successor instanceof Array) {
           oProd.successor = [...oProd.successor, ...nSuccessorAsArray];
         } else {
           oProd.successor = [oProd.successor, ...nSuccessorAsArray];
         }
+        //TODO: There is  a weird edge case here where if many match, it can get appended twice.
+        // Though this technically should not happen
       } else {
-        this.productions.push(nP);
+        matchedAny = false;
       }
     });
+    if (!matchedAny) {
+      this.productions.push(nP);
+    }
   }
   resetStoredIterations = () => {
     this.outputs = [this.axiom];
@@ -244,7 +254,11 @@ function expandSuccessor(successor: Successor, params: ParamsValue): Axiom {
     let newLetter: Letter<ParamsValue> = { symbol: sLetter.symbol }
     if (sLetter.params) {
       let evaluatedParams : ParamsValue = [];
+      console.log("ABOUT TO CRASH EH");
+      console.log(sLetter.params);
+      console.log(params);
       sLetter.params.forEach((paramRule) => {
+        //if (!params) params = []
         let evaluatedParam = paramRule(...params);
         evaluatedParams.push(evaluatedParam);
       })

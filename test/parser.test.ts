@@ -45,23 +45,28 @@ if (testPredecessor || runAllTests){
   errorHelper("Predecessor", incorrectPredInputs, parsePredecessor);
 }
 if (testProduction || runAllTests) {
-  let productionInputs = ["A : AF", "A<B(x)>R:B(1)A","A(x,y){x>y}: A(x*2, y*3)F"]
+  let productionInputs = ["A : AF", "A<B(x)>R:B(1)A","A(x,y){x>y}: A(x*2, y*3)F", "A:-(30)F"]
   let productionOutputs = [ gPd(gP(gL("A")), 
                                 gS([gL("A"), gL("F")])),
                             gPd(gP(gL("B",['x']), {left: gL('A'), right:gL('R')}), 
                                 gS([gL("B",[(x) => 1]), gL("A")])),
                             gPd(gP(gL("A",['x', 'y']), undefined, (x,y) => x > y), 
-                                gS([gL("A",[(x,y) => x*2, (x,y) => y*3]), gL("F")]))]
+                                gS([gL("A",[(x,y) => x*2, (x,y) => y*3]), gL("F")])),
+                            gPd(gP(gL("A")), 
+                                gS([gL("-",[() => 30]), gL("F")]))]
   runnerHelper("Production", productionInputs, productionOutputs, parseProduction, compareProduction);
 }
 if (testStochastic || runAllTests) {
-  let stochInputs = [["A: X", "A:Y"], ["A(x): X", "A(x): Y", "A(x): B"], ["A(r): R", "A(r): {2} R"]];
+  let stochInputs = [["A: X", "A:Y"], ["A(x): X", "A(x): Y", "A(x): B"], ["A(r): R", "A(r): {2} R"], ["A(x):a", "A(x):b", "A(x):c", "A(x):d", "P:p"]];
   let stochOutputs = [[gPds(gP(gL("A")), 
                           gS([gL("X")]), gS([gL("Y")]))],
                       [gPds(gP(gL("A", ['x'])),
                           gS([gL("X")]), gS([gL("Y")]), gS([gL("B")]))],
                       [gPds(gP(gL("A", ['r'])),
-                           gS([gL("R")]), gS([gL("R")],2))]
+                           gS([gL("R")]), gS([gL("R")],2))],
+                      [gPds(gP(gL("A", ["x"])),
+                            gS([gL("a")]), gS([gL("b")]), gS([gL("c")]), gS([gL("d")])),
+                      gPd(gP(gL("P")), gS([gL("p")]))]
                       ]              
   runnerHelper("Stochastic", stochInputs, stochOutputs, (p) =>  new LSystem("A", p).productions, compareProductions);                    
 }

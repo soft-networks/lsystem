@@ -11,6 +11,7 @@ export default class LSystem {
     getAllIterationsAsObject: (n?: number) => Axiom[];
     getIterationAsString: (n?: number) => string;
     getIterationAsObject: (n?: number) => Axiom;
+    addProduction: (p: Production | string) => void;
     resetStoredIterations: () => void;
     /**
      * Replaces each letter of an axiom with the right successor.
