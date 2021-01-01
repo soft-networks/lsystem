@@ -57,13 +57,13 @@ export default class LSystem {
     let nP = p as Production;
     if (this.productions.length == 0) {
       this.productions.push(nP);
-      console.log("First production added: " + ps);
+      dPrint("First production added: " + ps);
       return;
     }
     let matchedAny = false;
     this.productions.forEach((oProd) => {
       if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
-        console.log("Production matched, appending successor" + ps);
+        dPrint("Production matched, appending successor" + ps);
         matchedAny = true;
         let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
         if (oProd.successor instanceof Array) {
@@ -254,11 +254,8 @@ function expandSuccessor(successor: Successor, params: ParamsValue): Axiom {
     let newLetter: Letter<ParamsValue> = { symbol: sLetter.symbol }
     if (sLetter.params) {
       let evaluatedParams : ParamsValue = [];
-      console.log("ABOUT TO CRASH EH");
-      console.log(sLetter.params);
-      console.log(params);
       sLetter.params.forEach((paramRule) => {
-        //if (!params) params = []
+        if (!params) params = []
         let evaluatedParam = paramRule(...params);
         evaluatedParams.push(evaluatedParam);
       })
