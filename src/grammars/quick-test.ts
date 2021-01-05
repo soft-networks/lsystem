@@ -1,13 +1,24 @@
 import nearley from "nearley"
-import grammar from "./axiom"
+import {default as axiomGrammar} from "./axiom"
+import {default as predecessorGrammar} from "./predecessor"
 import util from "util";
 
-const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+let axiomTests = ["A", "B(1,2)", "C(1,1.5)A"];
+let predecessorTests = ["A", "A(a,b)", "A<B", "r<A(a)>x"]
 
-let tests = ["A", "B(1,2)", "C(1,1.5)A"];
+let currentTests = predecessorTests;
+let cGrammar = nearley.Grammar.fromCompiled(predecessorGrammar);
 
-tests.forEach((test) => {
-  console.log("Testing: " + test);
+// parser.feed("A");
+// showResults(parser);
+
+
+// parser.feed("A(1)");
+// showResults(parser);
+
+currentTests.forEach((test) => {
+  let parser = new nearley.Parser(cGrammar);
+  console.log("Testing: " + test + "///");
   parser.feed(test);
   showResults(parser);
 })
