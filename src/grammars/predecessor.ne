@@ -1,13 +1,12 @@
 @preprocessor typescript
 @builtin "number.ne" 
-@builtin "whitespace.ne" 
 
 #Axiom 
 #Main -> "A"
 Main -> Predecessor {% id %}
 
-Predecessor -> _ PLetters _ {% (d) => d[1] %}
-Predecessor -> _ PLetters _ "{" _ PCondition _ "}" {% (d) => ({letter: d[1].letter, context: d[1].context, conditionString: d[5] }) %}
+Predecessor -> PLetters  {% id %}
+Predecessor -> PLetters  "{" PCondition "}" {% (d) => ({letter: d[0].letter, context: d[0].context, conditionString: d[2] }) %}
 
 #Predecessor Letter + context
 PLetters -> PLetter {% (d) => ({letter: d[0]}) %}
@@ -19,8 +18,8 @@ PLetters -> PLetter "<" PLetter ">" PLetter {% (d) => ({letter: d[2], context: {
 PCondition -> .:* {% (d) => d[0].join('') %}
 
 #Predecessor Letter			 
-PLetter -> _ symbol _ {% (d) => ({symbol: d[1],params: undefined}) %}
-PLetter -> _ symbol _ "(" PParams ")" _ {% (d) => ({symbol: d[1], params: d[4]}) %}
+PLetter -> symbol {% (d) => ({symbol: d[0],params: undefined}) %}
+PLetter -> symbol  "(" PParams ")" {% (d) => ({symbol: d[0], params: d[2]}) %}
 
 
 #Deal with the params
@@ -30,4 +29,5 @@ PParams -> PPsymbol PParam:+ {% (d) => [d[0],...d[1]] %} #Many params. Deconstru
 PParam -> "," PPsymbol {% ([c,n]) => n %} 
 PPsymbol -> [a-zA-Z]:+ {% (d) => d[0].join('')%}
 
-symbol -> [0-9a-zA-z] {% id %}
+symbol -> [^,():{}<>] {% id %}
+

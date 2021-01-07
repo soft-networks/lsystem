@@ -120,16 +120,9 @@ const grammar: Grammar = {
             );
         }
         },
-    {"name": "_$ebnf$1", "symbols": []},
-    {"name": "_$ebnf$1", "symbols": ["_$ebnf$1", "wschar"], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "_", "symbols": ["_$ebnf$1"], "postprocess": function(d) {return null;}},
-    {"name": "__$ebnf$1", "symbols": ["wschar"]},
-    {"name": "__$ebnf$1", "symbols": ["__$ebnf$1", "wschar"], "postprocess": (d) => d[0].concat([d[1]])},
-    {"name": "__", "symbols": ["__$ebnf$1"], "postprocess": function(d) {return null;}},
-    {"name": "wschar", "symbols": [/[ \t\n\v\f]/], "postprocess": id},
     {"name": "Main", "symbols": ["Predecessor"], "postprocess": id},
-    {"name": "Predecessor", "symbols": ["_", "PLetters", "_"], "postprocess": (d) => d[1]},
-    {"name": "Predecessor", "symbols": ["_", "PLetters", "_", {"literal":"{"}, "_", "PCondition", "_", {"literal":"}"}], "postprocess": (d) => ({letter: d[1].letter, context: d[1].context, conditionString: d[5] })},
+    {"name": "Predecessor", "symbols": ["PLetters"], "postprocess": id},
+    {"name": "Predecessor", "symbols": ["PLetters", {"literal":"{"}, "PCondition", {"literal":"}"}], "postprocess": (d) => ({letter: d[0].letter, context: d[0].context, conditionString: d[2] })},
     {"name": "PLetters", "symbols": ["PLetter"], "postprocess": (d) => ({letter: d[0]})},
     {"name": "PLetters", "symbols": ["PLetter", {"literal":"<"}, "PLetter"], "postprocess": (d) => ({letter: d[2], context: {left: d[0]}})},
     {"name": "PLetters", "symbols": ["PLetter", {"literal":">"}, "PLetter"], "postprocess": (d) => ({letter: d[0], context: {right: d[0]}})},
@@ -137,8 +130,8 @@ const grammar: Grammar = {
     {"name": "PCondition$ebnf$1", "symbols": []},
     {"name": "PCondition$ebnf$1", "symbols": ["PCondition$ebnf$1", /./], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "PCondition", "symbols": ["PCondition$ebnf$1"], "postprocess": (d) => d[0].join('')},
-    {"name": "PLetter", "symbols": ["_", "symbol", "_"], "postprocess": (d) => ({symbol: d[1],params: undefined})},
-    {"name": "PLetter", "symbols": ["_", "symbol", "_", {"literal":"("}, "PParams", {"literal":")"}, "_"], "postprocess": (d) => ({symbol: d[1], params: d[4]})},
+    {"name": "PLetter", "symbols": ["symbol"], "postprocess": (d) => ({symbol: d[0],params: undefined})},
+    {"name": "PLetter", "symbols": ["symbol", {"literal":"("}, "PParams", {"literal":")"}], "postprocess": (d) => ({symbol: d[0], params: d[2]})},
     {"name": "PParams", "symbols": ["PPsymbol"]},
     {"name": "PParams$ebnf$1", "symbols": ["PParam"]},
     {"name": "PParams$ebnf$1", "symbols": ["PParams$ebnf$1", "PParam"], "postprocess": (d) => d[0].concat([d[1]])},
@@ -147,7 +140,7 @@ const grammar: Grammar = {
     {"name": "PPsymbol$ebnf$1", "symbols": [/[a-zA-Z]/]},
     {"name": "PPsymbol$ebnf$1", "symbols": ["PPsymbol$ebnf$1", /[a-zA-Z]/], "postprocess": (d) => d[0].concat([d[1]])},
     {"name": "PPsymbol", "symbols": ["PPsymbol$ebnf$1"], "postprocess": (d) => d[0].join('')},
-    {"name": "symbol", "symbols": [/[0-9a-zA-z]/], "postprocess": id}
+    {"name": "symbol", "symbols": [/[^,():{}<>]/], "postprocess": id}
   ],
   ParserStart: "Main",
 };
