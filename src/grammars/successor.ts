@@ -172,7 +172,7 @@ const grammar: Grammar = {
     {"name": "N$string$9", "symbols": [{"literal":"l"}, {"literal":"n"}], "postprocess": (d) => d.join('')},
     {"name": "N", "symbols": ["N$string$9", "P"], "postprocess": (d) => "Math.log(" + d[1] + ")"},
     {"name": "N$string$10", "symbols": [{"literal":"r"}, {"literal":"n"}, {"literal":"d"}, {"literal":"("}, {"literal":")"}], "postprocess": (d) => d.join('')},
-    {"name": "N", "symbols": ["N$string$10"], "postprocess": (d) => "Math.Random()"},
+    {"name": "N", "symbols": ["N$string$10"], "postprocess": (d) => "Math.random()"},
     {"name": "N$string$11", "symbols": [{"literal":"r"}, {"literal":"n"}, {"literal":"d"}, {"literal":"("}], "postprocess": (d) => d.join('')},
     {"name": "N", "symbols": ["N$string$11", "AS", {"literal":","}, "AS", {"literal":")"}], "postprocess": (d) => `Math.random()*((${d[3]}) - (${d[1]}))+(${d[3]})`},
     {"name": "mathsymbol", "symbols": ["decimal"], "postprocess": id},

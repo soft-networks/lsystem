@@ -46,7 +46,7 @@ N -> mathsymbol     {% id %}
     | "e"           {% (d) => "Math.E" %}
     | "sqrt" P    {% (d) => "Math.sqrt(" + d[1] + ")" %}
     | "ln" P      {% (d) => "Math.log(" + d[1] + ")"  %}
-	| "rnd()"		{% (d) => "Math.Random()" %}
+	| "rnd()"		{% (d) => "Math.random()" %}
 	| "rnd(" AS "," AS  ")" {% (d) => `Math.random()*((${d[3]}) - (${d[1]}))+(${d[3]})` %}
 #Mathsymbol is either a decimal, int or a string (because it can be a variable)
 mathsymbol -> decimal  {% id %}
