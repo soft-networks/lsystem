@@ -5,8 +5,9 @@ More docs, and examples to come :)
 
 ### Scripts to get going
 
-- `npm run start-parser`: Runs the parser on a variety of inputs, showing outputs
 - `npm run start-lsystem`: Runs the lsystem on a basic string, iterates it
+- `npm run start-parser`: Runs the parser on a variety of inputs, showing outputs from Parser
+- `npm run start-grammar`: Runs the grammar on a variety of inputs, showing outputs from Nearley
 - `npm run test`: Runs test with jest.
 - `npm watch`: Runs typescript (tsc) in watch mode.
 
@@ -17,7 +18,7 @@ More docs, and examples to come :)
 - [ ] Add Comments + JSDoc
 - [ ] Publish examples repo, host examples somewhere
 - [ ] Fix npmignore (remove it and just do "include" in package.json?)
-- [ ] Rewrite parser.ts to use a lexer / parser
 - [ ] Add Readme
 - [ ] Performance
-  - LSystem constructor is slow (loops through productions every time), can be faster by using a map
+- [ ] Change LSystem example to be interactive (take in input on the command line)
+- [ ] LSystem constructor is slow (loops through productions every time), can be faster by using a map

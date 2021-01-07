@@ -1,4 +1,4 @@
-import {Letter, Axiom, ParamsValue, ParamsName, ParamsRule, Condition, Params, Context, Production, Predecessor, Successor } from "./interfaces"
+import {Letter, Axiom, ParamsName, Params, Predecessor, Successor } from "./interfaces"
 import nearley from "nearley"
 import {default as axiomGrammar} from "./grammars/axiom"
 import {default as predecessorGrammar} from "./grammars/predecessor"
