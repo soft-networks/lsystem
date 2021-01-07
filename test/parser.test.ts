@@ -19,33 +19,34 @@ if (testAxiom || runAllTests) {
   errorHelper("axiom", axiomErrors, parseAxiom); 
 }
 if (testSuccessor || runAllTests) {
-  let successorInputs = ["A", "A(x*2)XA", "FAB", "A(x * 2, y * 3)", "A((2 *x+3) +(4 * y))B", "{4}A", "A{10}"];
-  let successorInputParams = [undefined, ['x'], undefined, ['x', 'y'], ['x', 'y'], undefined]
+  let successorInputs = ["A", "A(x*2)XA", "FAB", "A(x * 2, y * 3)", "A((2 *x+3) +(4 ^ y))B", "{4}A", "A{10}", "A(sin(x))"];
+  let successorInputParams = [undefined, ['x'], undefined, ['x', 'y'], ['x', 'y'], undefined, undefined, ['x']]
   let successorOutputs: Successor[] = [gS([gL("A")]), 
                           gS([gL("A", [(x) => 2*x]), gL("X"), gL("A")]),
                           gS([gL("F"), gL("A"), gL("B")]),
                           gS([gL("A", [(x,y)=> 2*x, (x,y)=> y*3])]),
-                          gS([gL("A", [(x,y) => ((2*x+3) + (4*y))]), gL("B")]),
+                          gS([gL("A", [(x,y) => ((2*x+3) + Math.pow(4,y))]), gL("B")]),
                           gS([gL("A")], 4),
-                          gS([gL("A")], 10)]
+                          gS([gL("A")], 10),
+                          gS([gL("A", [(x) => Math.sin(x)])])]
   runnerHelper("Succesor", successorInputs, successorOutputs, (s,i) => parseSuccessor(s, successorInputParams[i]), compareSuccessor);
-  let successorErrors = ["{4A"];
+  let successorErrors = ["{4A", "A(sin(x)"];
   errorHelper("successor", successorErrors, (s,i) => parseSuccessor(s, successorInputParams[i]))
 }
 if (testPredecessor || runAllTests){
-  let predInputs = ["A", "A<B>C", "A(x)<B(x,y)>C", "B(x,y){x>y}", "B(x,y){x+y>2}"];
-  let predOutputs = [ gP(gL("A")), 
+  let predInputs = ["A", "A ", "A<B>C", "A(x)<B(x,y)>C", "B(x,y){x>y}", "B(x,y){x+y>2}"];
+  let predOutputs = [ gP(gL("A")), gP(gL("A")), 
                       gP(gL("B"), {left: gL("A"), right: gL("C")}),
                       gP(gL("B",["x","y"]), {left: gL("A", ['x']), right:gL("C")}),
                       gP(gL("B",["x","y"]), undefined, function(x,y) { return x > y}),
                       gP(gL("B",["x","y"]), undefined, function(x,y) { return x + y > 2}),
                     ]
-  runnerHelper("Succesor", predInputs, predOutputs, parsePredecessor, comparePredecessor);                  
+  runnerHelper("Predecessor", predInputs, predOutputs, parsePredecessor, comparePredecessor);                  
   let incorrectPredInputs = ["{", "B(a,", "B{x", "B<<"]
   errorHelper("Predecessor", incorrectPredInputs, parsePredecessor);
 }
 if (testProduction || runAllTests) {
-  let productionInputs = ["A : AF", "A<B(x)>R:B(1)A","A(x,y){x>y}: A(x*2, y*3)F", "A:-(30)F"]
+  let productionInputs = ["A : AF", "A <B(x)> R: B ( 1)A","A(x,y){x>y}:A(x*2, y*3)F", "A:-(30)F", "A:X(rnd())", "A:X(rnd(1,10))"]
   let productionOutputs = [ gPd(gP(gL("A")), 
                                 gS([gL("A"), gL("F")])),
                             gPd(gP(gL("B",['x']), {left: gL('A'), right:gL('R')}), 
@@ -53,7 +54,11 @@ if (testProduction || runAllTests) {
                             gPd(gP(gL("A",['x', 'y']), undefined, (x,y) => x > y), 
                                 gS([gL("A",[(x,y) => x*2, (x,y) => y*3]), gL("F")])),
                             gPd(gP(gL("A")), 
-                                gS([gL("-",[() => 30]), gL("F")]))]
+                                gS([gL("-",[() => 30]), gL("F")])),
+                            gPd(gP(gL("A")), 
+                                gS([gL("X",[() => Math.random()])])),
+                            gPd(gP(gL("A")), 
+                                gS([gL("X",[() => Math.random()*(10-1)+1])]))]
   runnerHelper("Production", productionInputs, productionOutputs, parseProduction, compareProduction);
 }
 if (testStochastic || runAllTests) {
@@ -116,7 +121,13 @@ function compareSuccessor(tOut, sOut) {
       tFunctions.forEach((tFunc, i3) => {
         let sFunc = sFunctions[i3];
         expect(sFunc).toEqual(expect.any(Function));
-        expect(tFunc(1,2,3)).toEqual(sFunc(1,2,3));
+        if (!tFunc.toString().includes("random")) {
+          //Make sure outputs are the same for deterministic functions
+          expect(tFunc(1,2,3)).toEqual(sFunc(1,2,3));
+        } else {
+          //If not deterministic, at least call the resulting function and make sure we dont error
+          sFunc(1,2,3);
+        }
       })
     }
   })

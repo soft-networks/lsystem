@@ -5,8 +5,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build-grammar": "cd src/grammars/ && nearleyc axiom.ne -o axiom.ts && nearleyc predecessor.ne -o predecessor.ts  && nearleyc successor.ne -o successor.ts && nearleyc production.ne -o production.ts",
     "start-parser": "ts-node examples/parserOutputs.ts ",
     "start-lsystem": "ts-node examples/lSystemOutputs.ts",
+    "start-nearley": "cd src/grammars/ && nearleyc axiom.ne -o axiom.ts && ts-node quick-test.ts",
     "watch": "tsc -p tsconfig.global.json -w",
     "build": "tsc -p tsconfig.global.json",
     "test": "jest test"
@@ -14,6 +16,7 @@
   "author": "Bhavik Singh",
   "license": "MIT License",
   "devDependencies": {
+    "@types/nearley": "^2.11.1",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
     "ts-node-dev": "^1.0.0",
@@ -21,6 +24,7 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
-    "@types/jest": "^26.0.15"
+    "@types/jest": "^26.0.15",
+    "nearley": "^2.20.1"
   }
 }
