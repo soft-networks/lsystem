@@ -64,6 +64,7 @@ export default class LSystem {
     this.productions.forEach((oProd) => {
       if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
         dPrint("Production matched, appending successor" + ps);
+        
         matchedAny = true;
         let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
         if (oProd.successor instanceof Array) {
@@ -71,15 +72,19 @@ export default class LSystem {
         } else {
           oProd.successor = [oProd.successor, ...nSuccessorAsArray];
         }
+        
+        dPrint("After appending to successor, the production is as follows");
+        dPrint(oProd);
         //TODO: There is  a weird edge case here where if many match, it can get appended twice.
         // Though this technically should not happen
-      } else {
-        matchedAny = false;
       }
     });
     if (!matchedAny) {
+      dPrint("Production didnt match, so appending" + ps);
       this.productions.push(nP);
     }
+    dPrint("After production was added now productions are");
+    dPrint(this.productions);
   }
   resetStoredIterations = () => {
     this.outputs = [this.axiom];

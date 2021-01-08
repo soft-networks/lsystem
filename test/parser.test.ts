@@ -62,7 +62,7 @@ if (testProduction || runAllTests) {
   runnerHelper("Production", productionInputs, productionOutputs, parseProduction, compareProduction);
 }
 if (testStochastic || runAllTests) {
-  let stochInputs = [["A: X", "A:Y"], ["A(x): X", "A(x): Y", "A(x): B"], ["A(r): R", "A(r): {2} R"], ["A(x):a", "A(x):b", "A(x):c", "A(x):d", "P:p"]];
+  let stochInputs = [["A: X", "A:Y"], ["A(x): X", "A(x): Y", "A(x): B"], ["A(r): R", "A(r): {2} R"], ["A(x):a", "P:p", "A(x):b", "A(x):c",  "A(x):d" ]];
   let stochOutputs = [[gPds(gP(gL("A")), 
                           gS([gL("X")]), gS([gL("Y")]))],
                       [gPds(gP(gL("A", ['x'])),

@@ -60,16 +60,18 @@ class LSystem {
                     else {
                         oProd.successor = [oProd.successor, ...nSuccessorAsArray];
                     }
+                    dPrint("After appending to successor, the production is as follows");
+                    dPrint(oProd);
                     //TODO: There is  a weird edge case here where if many match, it can get appended twice.
                     // Though this technically should not happen
                 }
-                else {
-                    matchedAny = false;
-                }
             });
             if (!matchedAny) {
+                dPrint("Production didnt match, so appending" + ps);
                 this.productions.push(nP);
             }
+            dPrint("After production was added now productions are");
+            dPrint(this.productions);
         };
         this.resetStoredIterations = () => {
             this.outputs = [this.axiom];

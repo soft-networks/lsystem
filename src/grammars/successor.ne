@@ -47,7 +47,7 @@ N -> mathsymbol     {% id %}
     | "sqrt" P    {% (d) => "Math.sqrt(" + d[1] + ")" %}
     | "ln" P      {% (d) => "Math.log(" + d[1] + ")"  %}
 	| "rnd()"		{% (d) => "Math.random()" %}
-	| "rnd(" AS "," AS  ")" {% (d) => `Math.random()*((${d[3]}) - (${d[1]}))+(${d[3]})` %}
+	| "rnd(" AS "," AS  ")" {% (d) => `Math.random()*((${d[3]}) - (${d[1]}))+(${d[1]})` %}
 #Mathsymbol is either a decimal, int or a string (because it can be a variable)
 mathsymbol -> decimal  {% id %}
 		| [a-zA-Z]:+    {% (d) => d[0].join("") %}
