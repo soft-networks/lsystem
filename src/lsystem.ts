@@ -18,7 +18,6 @@ export default class LSystem {
     productions.forEach((p) => {this.addProduction(p)});
     this.iterations = iterations || 1;
     this.outputs = [this.axiom];
-    this.iterate();
   }
   iterate = (n = this.iterations) => {
     let output = this.outputs[this.outputs.length - 1];
@@ -50,20 +49,22 @@ export default class LSystem {
     return this.outputs[n];
   }
   addProduction = (p: Production | string) => {
-    let ps = p;
+    let pstr = p;
+    let nP;
     if (! (p as Production).predecessor) {
-      p = parseProduction(p as string);
+      nP = parseProduction(p as string);
+    } else {
+      nP = {...p as Production};
     }
-    let nP = p as Production;
     if (this.productions.length == 0) {
       this.productions.push(nP);
-      dPrint("First production added: " + ps);
+      dPrint("First production added: " + pstr);
       return;
     }
     let matchedAny = false;
     this.productions.forEach((oProd) => {
       if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
-        dPrint("Production matched, appending successor" + ps);
+        dPrint("Production matched, appending successor" + pstr);
         
         matchedAny = true;
         let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
@@ -80,11 +81,9 @@ export default class LSystem {
       }
     });
     if (!matchedAny) {
-      dPrint("Production didnt match, so appending" + ps);
+      dPrint("Production didnt match, so appending" + pstr);
       this.productions.push(nP);
     }
-    dPrint("After production was added now productions are");
-    dPrint(this.productions);
   }
   resetStoredIterations = () => {
     this.outputs = [this.axiom];

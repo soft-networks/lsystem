@@ -70,8 +70,7 @@ class LSystem {
                 dPrint("Production didnt match, so appending" + ps);
                 this.productions.push(nP);
             }
-            dPrint("After production was added now productions are");
-            dPrint(this.productions);
+            console.log(this.productions);
         };
         this.resetStoredIterations = () => {
             this.outputs = [this.axiom];
