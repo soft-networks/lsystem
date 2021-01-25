@@ -126,9 +126,22 @@ export default class LSystem {
     let matchedProduction: Production | undefined;
     this.productions.forEach((production) => {
       if (predecessorMatchesLetter(letter, production.predecessor, currentAxiom, currentIndex)) {
-        if (matchedProduction)
-          throw Error("Multiple productions are matching " + letter.symbol);
-        matchedProduction = production;
+        if (matchedProduction) {
+          //Context precedence
+          if (matchedProduction.predecessor.context && !production.predecessor.context) {
+            matchedProduction = matchedProduction;
+          } else if (production.predecessor.context && !matchedProduction.predecessor.context) {
+            matchedProduction = production
+          } else if (!production.predecessor.context && !matchedProduction.predecessor.context) {
+            throw Error("Multiple non-contextual productions are matching " + letter.symbol);
+          } else if (production.predecessor.context && matchedProduction.predecessor.context) {
+            throw Error("Multiple contextual productions are matching " + letter.symbol);
+          } else { 
+            throw Error("Multiple productions are matching, and I dont know why... " + letter.symbol);
+          }
+        } else {
+          matchedProduction = production;
+        }
       }
     });
     return matchedProduction;

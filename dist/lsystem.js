@@ -38,20 +38,23 @@ class LSystem {
             return this.outputs[n];
         };
         this.addProduction = (p) => {
-            let ps = p;
+            let pstr = p;
+            let nP;
             if (!p.predecessor) {
-                p = parser_1.parseProduction(p);
+                nP = parser_1.parseProduction(p);
             }
-            let nP = p;
+            else {
+                nP = Object.assign({}, p);
+            }
             if (this.productions.length == 0) {
                 this.productions.push(nP);
-                dPrint("First production added: " + ps);
+                dPrint("First production added: " + pstr);
                 return;
             }
             let matchedAny = false;
             this.productions.forEach((oProd) => {
                 if (predecessorMatchesPredeecessor(oProd.predecessor, nP.predecessor)) {
-                    dPrint("Production matched, appending successor" + ps);
+                    dPrint("Production matched, appending successor" + pstr);
                     matchedAny = true;
                     let nSuccessorAsArray = nP.successor instanceof Array ? nP.successor : [nP.successor];
                     if (oProd.successor instanceof Array) {
@@ -67,10 +70,9 @@ class LSystem {
                 }
             });
             if (!matchedAny) {
-                dPrint("Production didnt match, so appending" + ps);
+                dPrint("Production didnt match, so appending" + pstr);
                 this.productions.push(nP);
             }
-            console.log(this.productions);
         };
         this.resetStoredIterations = () => {
             this.outputs = [this.axiom];
@@ -114,9 +116,27 @@ class LSystem {
             let matchedProduction;
             this.productions.forEach((production) => {
                 if (predecessorMatchesLetter(letter, production.predecessor, currentAxiom, currentIndex)) {
-                    if (matchedProduction)
-                        throw Error("Multiple productions are matching " + letter.symbol);
-                    matchedProduction = production;
+                    if (matchedProduction) {
+                        //Context precedence
+                        if (matchedProduction.predecessor.context && !production.predecessor.context) {
+                            matchedProduction = matchedProduction;
+                        }
+                        else if (production.predecessor.context && !matchedProduction.predecessor.context) {
+                            matchedProduction = production;
+                        }
+                        else if (!production.predecessor.context && !matchedProduction.predecessor.context) {
+                            throw Error("Multiple non-contextual productions are matching " + letter.symbol);
+                        }
+                        else if (production.predecessor.context && matchedProduction.predecessor.context) {
+                            throw Error("Multiple contextual productions are matching " + letter.symbol);
+                        }
+                        else {
+                            throw Error("Multiple productions are matching, and I dont know why... " + letter.symbol);
+                        }
+                    }
+                    else {
+                        matchedProduction = production;
+                    }
                 }
             });
             return matchedProduction;
@@ -130,7 +150,6 @@ class LSystem {
         productions.forEach((p) => { this.addProduction(p); });
         this.iterations = iterations || 1;
         this.outputs = [this.axiom];
-        this.iterate();
     }
 }
 exports.default = LSystem;
