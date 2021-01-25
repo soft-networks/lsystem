@@ -46,7 +46,7 @@ if (testPredecessor || runAllTests){
   errorHelper("Predecessor", incorrectPredInputs, parsePredecessor);
 }
 if (testProduction || runAllTests) {
-  let productionInputs = ["A : AF", "A <B(x)> R: B ( 1)A","A(x,y){x>y}:A(x*2, y*3)F", "A:-(30)F", "A:X(rnd())", "A:X(rnd(1,10))"]
+  let productionInputs = ["A : AF", "A <B(x)> R: B ( 1)A","A(x,y){x>y}:A(x*2, y*3)F", "A:-(30)F", "A:X(rnd())", "A:X(rnd(1,10))", "A>B(b): A(b+1)"]
   let productionOutputs = [ gPd(gP(gL("A")), 
                                 gS([gL("A"), gL("F")])),
                             gPd(gP(gL("B",['x']), {left: gL('A'), right:gL('R')}), 
@@ -58,7 +58,9 @@ if (testProduction || runAllTests) {
                             gPd(gP(gL("A")), 
                                 gS([gL("X",[() => Math.random()])])),
                             gPd(gP(gL("A")), 
-                                gS([gL("X",[() => Math.random()*(10-1)+1])]))]
+                                gS([gL("X",[() => Math.random()*(10-1)+1])])),
+                            gPd(gP(gL("A"), {right: gL("B", ["b"])}),
+                                gS([gL("A", [(b) => b+1])]))]
   runnerHelper("Production", productionInputs, productionOutputs, parseProduction, compareProduction);
 }
 if (testStochastic || runAllTests) {
@@ -75,6 +77,7 @@ if (testStochastic || runAllTests) {
                       ]              
   runnerHelper("Stochastic", stochInputs, stochOutputs, (p) =>  new LSystem("A", p).productions, compareProductions);                    
 }
+
 
 //COMPARISON FUNCTIONS
 function compareAxiom(tOut, aOut) {

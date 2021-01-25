@@ -92,7 +92,7 @@ const grammar = {
         { "name": "Predecessor", "symbols": ["PLetters", { "literal": "{" }, "PCondition", { "literal": "}" }], "postprocess": (d) => ({ letter: d[0].letter, context: d[0].context, conditionString: d[2] }) },
         { "name": "PLetters", "symbols": ["PLetter"], "postprocess": (d) => ({ letter: d[0] }) },
         { "name": "PLetters", "symbols": ["PLetter", { "literal": "<" }, "PLetter"], "postprocess": (d) => ({ letter: d[2], context: { left: d[0] } }) },
-        { "name": "PLetters", "symbols": ["PLetter", { "literal": ">" }, "PLetter"], "postprocess": (d) => ({ letter: d[0], context: { right: d[0] } }) },
+        { "name": "PLetters", "symbols": ["PLetter", { "literal": ">" }, "PLetter"], "postprocess": (d) => ({ letter: d[0], context: { right: d[2] } }) },
         { "name": "PLetters", "symbols": ["PLetter", { "literal": "<" }, "PLetter", { "literal": ">" }, "PLetter"], "postprocess": (d) => ({ letter: d[2], context: { left: d[0], right: d[4] } }) },
         { "name": "PCondition$ebnf$1", "symbols": [] },
         { "name": "PCondition$ebnf$1", "symbols": ["PCondition$ebnf$1", /./], "postprocess": (d) => d[0].concat([d[1]]) },

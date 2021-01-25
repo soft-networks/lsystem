@@ -12,10 +12,16 @@ let simpleTestCases = [{
   expectedOutput: "FFA(2)XXXXXXXXXXXXXXXXXX"
 }, {
   name: "Context matching",
-  axiom: "ABC",
-  productions: ["A<B>C:Y", "R<A>R:X"],
+  axiom: "A+++BC+++LR",
+  productions: ["A<B>C:Y", "C>R:L"],
   iterations: 1,
-  expectedOutput: "AYC"
+  expectedOutput: "A+++YC+++LR"
+}, {
+  name: "Context matching nested",
+  axiom: "A[X]BROXP",
+  productions: ["A<B:Y", "O<P:L"],
+  iterations: 1,
+  expectedOutput: "A[X]YROXP"
 }]
 
 simpleTestCases.forEach((testCase) => {
@@ -27,6 +33,9 @@ simpleTestCases.forEach((testCase) => {
     expect(output).toEqual(outputAsString);
   })
 })
+
+
+
 
 //Overloading the iteration value in iterate 
 let overLoadIterations = 50;

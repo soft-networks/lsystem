@@ -28,3 +28,4 @@ export default class LSystem {
      */
     findProduction: (letter: Letter<ParamsValue>, currentAxiom: Axiom, currentIndex: number) => Production;
 }
+export declare var ignoredCharacters: string[];

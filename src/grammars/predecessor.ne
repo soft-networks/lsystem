@@ -11,7 +11,7 @@ Predecessor -> PLetters  "{" PCondition "}" {% (d) => ({letter: d[0].letter, con
 #Predecessor Letter + context
 PLetters -> PLetter {% (d) => ({letter: d[0]}) %}
 PLetters -> PLetter "<" PLetter {% (d) => ({letter: d[2], context: {left: d[0]}}) %}
-PLetters -> PLetter ">" PLetter {% (d) => ({letter: d[0], context: {right: d[0]}}) %}
+PLetters -> PLetter ">" PLetter {% (d) => ({letter: d[0], context: {right: d[2]}}) %}
 PLetters -> PLetter "<" PLetter ">" PLetter {% (d) => ({letter: d[2], context: {left: d[0], right: d[4]}}) %}
 
 #Predecessor condition can be anything. We clean it in parser.

@@ -132,12 +132,23 @@ export default class LSystem {
             matchedProduction = matchedProduction;
           } else if (production.predecessor.context && !matchedProduction.predecessor.context) {
             matchedProduction = production
-          } else if (!production.predecessor.context && !matchedProduction.predecessor.context) {
-            throw Error("Multiple non-contextual productions are matching " + letter.symbol);
+          } else {
+            console.log("Existing production");
+            console.log(matchedProduction);
+
+            console.log("Newly matched production");
+            console.log(production);
+
+            console.log("Current axiom");
+            console.log(axiomToStr(currentAxiom))
+          
+            if (!production.predecessor.context && !matchedProduction.predecessor.context) {
+              throw Error("Multiple non-contextual productions are matching " + letter.symbol);
           } else if (production.predecessor.context && matchedProduction.predecessor.context) {
-            throw Error("Multiple contextual productions are matching " + letter.symbol);
+              throw Error("Multiple contextual productions are matching " + letter.symbol);
           } else { 
-            throw Error("Multiple productions are matching, and I dont know why... " + letter.symbol);
+              throw Error("Multiple productions are matching, and I dont know why... " + letter.symbol);
+          }
           }
         } else {
           matchedProduction = production;
@@ -210,28 +221,53 @@ function letterMatchesLetter(l1: Letter<Params>, l2: Letter<Params>) {
   }
   return true;
 }
+
+var ignoredCharacters = ["[", "]", "#", "~", "&", "/", "\\", "%", "'", "!", "+", "-"];
+function findClosestRelevantLetter(axiom: Axiom, currentIndex: number, direction: -1 | 1): Letter<Params> | undefined {
+  let expectedClosedBracket;
+  let nextLetter, nextIndex = currentIndex, symbol;
+  while(true) {
+    nextIndex = nextIndex + direction;
+    nextLetter = axiom[nextIndex];
+    if (nextLetter == undefined) {
+      return undefined
+    }
+    symbol = nextLetter.symbol;
+    //If we're looking for a closed bracket, keep going till we find it
+    if (expectedClosedBracket !== undefined) {
+      if (symbol != expectedClosedBracket) {
+        continue;
+      } else if (symbol == expectedClosedBracket) {
+        expectedClosedBracket = undefined;
+        continue;
+      }
+     }
+     //If we should ignore this character, continue
+    if (ignoredCharacters.includes(symbol)) {
+     if (symbol == "]")  expectedClosedBracket = "[";
+     if (symbol == "[")  expectedClosedBracket = "]"
+     continue;
+    }
+    return nextLetter
+  } 
+}
+
 function contextMatchesAxiom(context: Context, axiom: Axiom, currentLetter: Letter<Params>, currentIndex: number): boolean {
-  let lMatch, rMatch;
-  if (context.left) {
-    lMatch = false;
-    for(let i = currentIndex -1; i >=0 ; i--) {
-      lMatch = letterMatchesLetter(context.left, axiom[i]);
-      if (lMatch) {
-        break;
-      }
-    }
+  
+  let lMatch;
+  if (!context.left) lMatch = true;
+  else {
+    let leftLetter = findClosestRelevantLetter(axiom, currentIndex, -1);
+    lMatch = leftLetter !== undefined ? letterMatchesLetter(context.left, leftLetter) : false;
   }
-  if (context.right) {
-    rMatch = false;
-    for(let i = currentIndex +1; i < axiom.length; i++) {
-      rMatch = letterMatchesLetter(context.right, axiom[i]);
-      if (rMatch) {
-        break;
-      }
-    }
+
+  let rMatch;
+  if (!context.right) rMatch  = true;
+  else {
+    let rightLetter = findClosestRelevantLetter(axiom, currentIndex, +1);
+    rMatch = rightLetter !== undefined ? letterMatchesLetter(context.right, rightLetter) : false;
   }
-  if (lMatch === undefined) lMatch = true;
-  if (rMatch === undefined) rMatch = true;
+
   dPrint("Completed context matching " + currentLetter.symbol + ", did find context = " + (lMatch && rMatch));
   return lMatch && rMatch;
 } 

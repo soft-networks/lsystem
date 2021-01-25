@@ -11,7 +11,15 @@ export function parseAxiom(axiom: string): Axiom {
 export function parseProduction(productionString: string) {
   let production = parseFromGrammar(productionGrammar, productionString);
   let predecessor = parsePredecessor(production.predecessorString);
-  let successor = parseSuccessor(production.successorString, predecessor.letter.params || []);
+
+  let predecessorParams = predecessor.letter.params || [];
+  if (predecessor.context) {
+    if (predecessor.context.left && predecessor.context.left.params) { predecessorParams.push(...predecessor.context.left.params)} 
+    if (predecessor.context.right && predecessor.context.right.params) { predecessorParams.push(...predecessor.context.right.params)}
+    let uniqueArray = [...new Set(predecessorParams)];
+    predecessorParams = uniqueArray;
+  }
+  let successor = parseSuccessor(production.successorString, predecessorParams);
   return {predecessor: predecessor, successor: successor};
 }
 export function parsePredecessor(predecessor: string) : Predecessor {
